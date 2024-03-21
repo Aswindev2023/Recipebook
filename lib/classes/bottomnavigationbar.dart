@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:recipe_book/classes/navigate_pages.dart';
 
 class BottomNavigationBarWidget extends StatelessWidget {
   final int selectedIndex;
-  final Function(int) onItemTapped;
 
   const BottomNavigationBarWidget({
     Key? key,
     required this.selectedIndex,
-    required this.onItemTapped,
   }) : super(key: key);
 
   @override
@@ -32,10 +31,27 @@ class BottomNavigationBarWidget extends StatelessWidget {
         ),
       ],
       currentIndex: selectedIndex,
-      onTap: onItemTapped,
+      onTap: (index) => _onItemTapped(context, index),
       backgroundColor: Colors.white,
       selectedItemColor: Colors.blue,
       unselectedItemColor: Colors.black,
     );
+  }
+
+  void _onItemTapped(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        NavigationService.navigateToHomePage(context);
+        break;
+      case 1:
+        NavigationService.navigateToCategoryPage(context);
+        break;
+      case 2:
+        NavigationService.navigateToFavoritesPage(context);
+        break;
+      case 3:
+        NavigationService.navigateToNewRecipePage(context);
+        break;
+    }
   }
 }

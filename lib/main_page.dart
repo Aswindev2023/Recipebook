@@ -1,28 +1,37 @@
 import 'package:flutter/material.dart';
 //import 'package:hive/hive.dart';
-//import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+//import 'package:recipe_book/db/type_adapter.dart';
+import 'package:recipe_book/model/recipebook_model.dart';
 import 'package:recipe_book/pages/home_page.dart';
-//import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:path_provider/path_provider.dart' as path_provider;
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  //Hive.registerAdapter(RecipeAdapter());
+  final appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
+  Hive.init(appDocumentDir.path);
+  await Hive.openBox('recipebook');
+  List<Recipe> recipes = Hive.box('recipebook').values.cast<Recipe>().toList();
+  runApp(MyApp(recipes: recipes));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
+  final List<Recipe> recipes;
+  const MyApp({Key? key, required this.recipes}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(),
+      home: MyHomePage(recipes: recipes),
     );
   }
 }
 
 class MyHomePage extends StatelessWidget {
-  const MyHomePage({Key? key}) : super(key: key);
-
+  final List<Recipe> recipes;
+  const MyHomePage({Key? key, required this.recipes}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,7 +95,8 @@ class MyHomePage extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const Homepage()));
+                                builder: (context) =>
+                                    Homepage(recipes: recipes)));
                       },
                       style: TextButton.styleFrom(
                         backgroundColor: const Color.fromARGB(255, 26, 243, 34),

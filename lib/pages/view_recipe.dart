@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
+import 'package:recipe_book/model/recipebook_model.dart';
 import 'package:recipe_book/pages/ingredients_page.dart';
 
 class ViewRecipe extends StatefulWidget {
-  const ViewRecipe({super.key});
+  const ViewRecipe({super.key, required Recipe recipe});
 
   @override
   State<ViewRecipe> createState() => _ViewRecipeState();
@@ -122,4 +123,4 @@ class _ViewRecipeState extends State<ViewRecipe> {
       ),
     );
   }
-}
+}*/

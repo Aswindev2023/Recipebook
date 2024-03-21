@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_book/classes/bottomnavigationbar.dart';
-import 'package:recipe_book/pages/favourites_page.dart';
-import 'package:recipe_book/pages/home_page.dart';
-import 'new_recipe.dart';
 
 class Category extends StatefulWidget {
   const Category({super.key});
@@ -12,7 +9,7 @@ class Category extends StatefulWidget {
 }
 
 class _CategoryState extends State<Category> {
-  int _selectedIndex = 1;
+  final int _selectedIndex = 1;
 
   final List<Map<String, dynamic>> categories = [
     {'title': 'Cakes', 'image': 'lib/assets/cake.jpg'},
@@ -63,40 +60,7 @@ class _CategoryState extends State<Category> {
       ),
       bottomNavigationBar: BottomNavigationBarWidget(
         selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
       ),
     );
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      switch (index) {
-        case 0:
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Homepage()),
-          );
-          break;
-        case 1:
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Category()),
-          );
-          break;
-        case 2:
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Favorites()),
-          );
-          break;
-        case 3:
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const NewRecipe()),
-          );
-          break;
-      }
-    });
   }
 }
