@@ -1,28 +1,27 @@
-import 'package:hive/hive.dart';
+// ignore_for_file: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member
+
+import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
 
-class HiveService {
-  static const String _boxName = 'recipebox';
+ValueNotifier<List<Recipe>> recipeListNotifier = ValueNotifier([]);
+void addRecipe(Recipe value) async {
+  final recipes = await Hive.openBox<Recipe>('recipeBook_db');
+  final _id = await recipes.add(value);
+  value.id = _id;
+  recipeListNotifier.value.add(value);
+  recipeListNotifier.notifyListeners();
+}
 
-  Future<void> addRecipe(Recipe recipe) async {
-    try {
-      final box = Hive.box('recipebook');
-      await box.add(recipe);
-      print('Recipe added to database: $recipe');
-    } catch (e) {
-      print('Error adding recipe to database: $e');
-    }
-  }
+Future<void> getRecipe() async {
+  final recipes = await Hive.openBox<Recipe>('recipeBook_db');
+  recipeListNotifier.value.clear();
+  recipeListNotifier.value.addAll(recipes.values);
+  recipeListNotifier.notifyListeners();
+}
 
-  Future<List<Recipe>> getRecipes() async {
-    try {
-      final box = Hive.box('recipebook');
-      final List<Recipe> recipes = box.values.cast<Recipe>().toList();
-      print('Recipes retrieved from database: $recipes');
-      return recipes;
-    } catch (e) {
-      print('Error retrieving recipes from database: $e');
-      return [];
-    }
-  }
+Future<void> deleteRecipe(int id) async {
+  final recipes = await Hive.openBox<Recipe>('recipeBook_db');
+  recipes.delete(id);
+  getRecipe();
 }

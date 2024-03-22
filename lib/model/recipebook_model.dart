@@ -1,54 +1,32 @@
-import 'dart:io';
-
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_generator/hive_generator.dart';
-//part 'model/recipe.g.dart';
+part 'recipebook_model.g.dart';
 
-enum RecipeCategory {
-  breakfast,
-  lunch,
-  dinner,
-  desserts,
-  beverages,
-  custom,
-}
-
-@HiveAdapt<Recipe>() // Added @HiveAdapt annotation here
-@HiveType(typeId: 0)
-class Recipe extends HiveObject {
+@HiveType(typeId: 4)
+class Recipe {
   @HiveField(0)
-  late List<String> imagePaths;
-
+  int? id;
   @HiveField(1)
-  late String name;
+  List<String> imagePaths;
 
   @HiveField(2)
-  late String description;
+  String name;
 
   @HiveField(3)
-  late RecipeCategory category;
+  String description;
 
   @HiveField(4)
-  late List<String> ingredients;
-
-  @HiveField(5)
-  late List<String> steps;
-
-  @HiveField(6)
   bool isFavorite;
 
-  @HiveField(7)
-  late dynamic time;
+  @HiveField(5)
+  String time;
 
   Recipe({
     required this.name,
     required this.description,
-    required this.ingredients,
-    required this.steps,
     required this.imagePaths,
-    required this.category,
     this.isFavorite = false,
     required this.time,
-    required List<File> images,
+    this.id,
   });
 }

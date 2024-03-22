@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
-import 'package:recipe_book/pages/view_recipe.dart';
+//import 'package:recipe_book/pages/view_recipe.dart';
 
 class RecipeListWidget extends StatelessWidget {
   final List<Recipe> recipes;

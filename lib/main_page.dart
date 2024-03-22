@@ -1,20 +1,28 @@
 import 'package:flutter/material.dart';
-//import 'package:hive/hive.dart';
+
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:recipe_book/model/Ingredients_model.dart';
+import 'package:recipe_book/model/recipe_categorymodel.dart';
 //import 'package:recipe_book/db/type_adapter.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
+import 'package:recipe_book/model/steps_model.dart';
 import 'package:recipe_book/pages/home_page.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
-  //Hive.registerAdapter(RecipeAdapter());
-  final appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
-  Hive.init(appDocumentDir.path);
-  await Hive.openBox('recipebook');
-  List<Recipe> recipes = Hive.box('recipebook').values.cast<Recipe>().toList();
-  runApp(MyApp(recipes: recipes));
+  if (!Hive.isAdapterRegistered(RecipeAdapter().typeId) &&
+      !Hive.isAdapterRegistered(IngredientsModelAdapter().typeId) &&
+      !Hive.isAdapterRegistered(CategoryModelAdapter().typeId) &&
+      !Hive.isAdapterRegistered(StepsModelAdapter().typeId)) {
+    Hive.registerAdapter(RecipeAdapter());
+    Hive.registerAdapter(StepsModelAdapter());
+    Hive.registerAdapter(IngredientsModelAdapter());
+    Hive.registerAdapter(CategoryModelAdapter());
+  }
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
