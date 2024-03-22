@@ -2,7 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:recipe_book/classes/bottomnavigationbar.dart';
 import 'package:recipe_book/db/hive_service.dart';
-import 'package:recipe_book/model/recipebook_model.dart'; // Import Recipe model
+import 'package:recipe_book/db/ingredients_function.dart';
+import 'package:recipe_book/db/steps_function.dart';
+
+import 'package:recipe_book/model/recipebook_model.dart';
+import 'package:recipe_book/model/Ingredients_model.dart';
+import 'package:recipe_book/model/steps_model.dart';
 import 'package:image_picker/image_picker.dart';
 
 class NewRecipe extends StatefulWidget {
@@ -13,18 +18,21 @@ class NewRecipe extends StatefulWidget {
 }
 
 class _NewRecipeState extends State<NewRecipe> {
-  final HiveService _hiveService = HiveService();
   final List<TextEditingController> _stepControllers = [
     TextEditingController()
   ];
+  final List<TextEditingController> _ingredientsController = [
+    TextEditingController()
+  ];
 
-  final TextEditingController _textareaController = TextEditingController();
+  final TextEditingController _descriptionareaController =
+      TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _ingredientsController = TextEditingController();
+
   final TextEditingController _stepsController = TextEditingController();
-  dynamic _selectedCategory;
+  final TextEditingController _ingredientsControllers = TextEditingController();
   final int _selectedIndex = 3;
-  String _cookTime = '';
+  final TextEditingController _cookTime = TextEditingController();
 
   List<File> _selectedImages = [];
 
@@ -40,36 +48,12 @@ class _NewRecipeState extends State<NewRecipe> {
     }
   }
 
-  void _addRecipe() {
-    final List<String> ingredients = _ingredientsController.text.split('\n');
-    final List<String> steps =
-        _stepControllers.map((controller) => controller.text).toList();
-
-    final List<String> imagePaths = _selectedImages
-        .map((image) => image.path)
-        .toList(); // Convert File objects to paths
-
-    final recipe = Recipe(
-      name: _nameController.text,
-      description: _textareaController.text,
-      category: _selectedCategory!,
-      imagePaths: imagePaths, // Use converted image paths
-      ingredients: ingredients,
-      steps: steps,
-      time: _cookTime,
-      images:
-          _selectedImages, // Pass the original list of File objects if needed
-    );
-
-    _hiveService.addRecipe(recipe);
-    Navigator.of(context).pop();
-  }
-
   @override
   void dispose() {
-    _textareaController.dispose();
+    _descriptionareaController.dispose();
     _nameController.dispose();
-    _ingredientsController.dispose();
+    _ingredientsControllers.dispose();
+    _cookTime.dispose();
     for (var controller in _stepControllers) {
       controller.dispose();
     }
@@ -78,13 +62,15 @@ class _NewRecipeState extends State<NewRecipe> {
 
   void _clearPage() {
     setState(() {
-      _textareaController.clear();
+      _descriptionareaController.clear();
       _nameController.clear();
-      _ingredientsController.clear();
-      _stepsController.clear();
-      _selectedCategory = null;
-      _cookTime = '';
+      _cookTime.clear();
       _selectedImages.clear();
+
+      _ingredientsController.clear();
+      _ingredientsController.add(TextEditingController());
+      _stepControllers.clear();
+      _stepControllers.add(TextEditingController());
     });
   }
 
@@ -138,33 +124,33 @@ class _NewRecipeState extends State<NewRecipe> {
                 labelText: 'Name',
                 border: OutlineInputBorder(),
               ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 16),
             TextField(
-              controller: _textareaController,
+              controller: _descriptionareaController,
               keyboardType: TextInputType.multiline,
               maxLines: null,
+              minLines: 2,
               decoration: const InputDecoration(
                 hintText: "Enter Description",
                 border: OutlineInputBorder(),
               ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 16),
             TextField(
-              onChanged: (value) {
-                setState(() {
-                  _cookTime = value;
-                });
-              },
+              controller: _cookTime,
               keyboardType: TextInputType.text,
               decoration: const InputDecoration(
                 labelText: ' Cooking Time',
                 hintText: 'e.g. 30 minutes',
                 border: OutlineInputBorder(),
               ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 16),
-            DropdownButtonFormField<RecipeCategory>(
+            /* DropdownButtonFormField<RecipeCategory>(
               value: _selectedCategory,
               decoration: const InputDecoration(
                 labelText: 'Category',
@@ -181,15 +167,65 @@ class _NewRecipeState extends State<NewRecipe> {
                   _selectedCategory = value;
                 });
               },
-            ),
-            const SizedBox(height: 16),
-            TextField(
+            ),*/
+            //const SizedBox(height: 16),
+            /*TextField(
               controller: _ingredientsController,
               maxLines: null,
               decoration: const InputDecoration(
                 labelText: 'Ingredients',
                 border: OutlineInputBorder(),
               ),
+            ),*/
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (int i = 0; i < _ingredientsController.length; i++)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: Stack(
+                      children: [
+                        TextField(
+                          controller: _ingredientsController[i],
+                          decoration: InputDecoration(
+                            labelText: 'Ingredients ${i + 1}',
+                            border: const OutlineInputBorder(),
+                          ),
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w500),
+                        ),
+                        if (_ingredientsController.length > 1 &&
+                            i != _ingredientsController.length - 1)
+                          Positioned(
+                            right: 0,
+                            top: 0,
+                            child: IconButton(
+                              icon: const Icon(Icons.remove),
+                              onPressed: () {
+                                setState(() {
+                                  _ingredientsController.removeAt(i);
+                                });
+                              },
+                            ),
+                          ),
+                        if (i == _ingredientsController.length - 1)
+                          Positioned(
+                            right: 0,
+                            bottom: 0,
+                            child: IconButton(
+                              icon: const Icon(Icons.add),
+                              onPressed: () {
+                                setState(() {
+                                  _ingredientsController
+                                      .add(TextEditingController());
+                                });
+                              },
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(height: 16),
             Column(
@@ -206,6 +242,8 @@ class _NewRecipeState extends State<NewRecipe> {
                             labelText: 'Step ${i + 1}',
                             border: const OutlineInputBorder(),
                           ),
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w500),
                         ),
                         if (_stepControllers.length > 1 &&
                             i != _stepControllers.length - 1)
@@ -262,7 +300,7 @@ class _NewRecipeState extends State<NewRecipe> {
                         const Color.fromARGB(255, 81, 243, 6)),
                   ),
                   onPressed: () {
-                    _addRecipe();
+                    saveRecipe();
                   },
                   child: const Text(
                     'Add',
@@ -278,5 +316,67 @@ class _NewRecipeState extends State<NewRecipe> {
         selectedIndex: _selectedIndex,
       ),
     );
+  }
+
+  void saveRecipe() {
+//debug code
+    print('Name: ${_nameController.text.isNotEmpty}');
+    print('Images: ${_selectedImages.isNotEmpty}');
+    print('Description: ${_descriptionareaController.text.isNotEmpty}');
+    print('Ingredients: ${_ingredientsController.isNotEmpty}');
+    print('Steps: ${_stepControllers.isNotEmpty}');
+    print('Cook Time: ${_cookTime.text.isNotEmpty}');
+
+    if (_nameController.text.isNotEmpty &&
+        _selectedImages.isNotEmpty &&
+        _descriptionareaController.text.isNotEmpty &&
+        _ingredientsController.isNotEmpty &&
+        _stepControllers.isNotEmpty &&
+        _cookTime.text.isNotEmpty) {
+      List<String> ingredients = [];
+      for (var controller in _ingredientsController) {
+        if (controller.text.isNotEmpty) {
+          ingredients.add(controller.text);
+        }
+      }
+
+      List<String> steps = [];
+      for (var controller in _stepControllers) {
+        if (controller.text.isNotEmpty) {
+          steps.add(controller.text);
+        }
+      }
+
+      String recipeName = _nameController.text;
+      String recipeDescription = _descriptionareaController.text;
+      String recipeCooktime = _cookTime.text;
+
+      List<String> imagePaths =
+          _selectedImages.map((image) => image.path).toList();
+
+      Recipe recipe = Recipe(
+        name: recipeName,
+        description: recipeDescription,
+        imagePaths: imagePaths,
+        isFavorite: false, // Default value for isFavorite
+        time: recipeCooktime,
+      );
+      StepsModel stepsModel = StepsModel(steps: steps);
+      IngredientsModel ingredientsModel =
+          IngredientsModel(ingredients: ingredients);
+
+      addRecipe(recipe);
+      addSteps(stepsModel);
+      addIngredients(ingredientsModel);
+
+      _clearPage();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content:
+              Text('Please fill in all fields and select at least one image.'),
+        ),
+      );
+    }
   }
 }

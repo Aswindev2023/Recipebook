@@ -8,7 +8,7 @@ class NavigationService {
   static void navigateToHomePage(BuildContext context) {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const Homepage(recipes: [])),
+      MaterialPageRoute(builder: (context) => const Homepage()),
     );
   }
 

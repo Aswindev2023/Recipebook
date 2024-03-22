@@ -1,24 +1,39 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:recipe_book/classes/bottomnavigationbar.dart';
 import 'package:recipe_book/classes/list_grid.dart';
+import 'package:recipe_book/db/hive_service.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
 
 class Homepage extends StatefulWidget {
-  final List<Recipe> recipes;
-  const Homepage({Key? key, required this.recipes}) : super(key: key);
+  const Homepage({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<Homepage> createState() => _HomepageState();
 }
 
 class _HomepageState extends State<Homepage> {
+  late List<Recipe> _recipes;
   bool _isGridView = true;
   final int _selectedIndex = 0;
+  @override
+  void initState() {
+    super.initState();
+    _recipes = [];
+    _loadRecipes();
+  }
+
+  Future<void> _loadRecipes() async {
+    await getRecipe();
+    setState(() {
+      _recipes = recipeListNotifier.value;
+    });
+  }
+
   void toggleFavoriteStatus(int index) {
     setState(() {
-      widget.recipes[index].isFavorite = !widget.recipes[index].isFavorite;
+      _recipes[index].isFavorite = !_recipes[index].isFavorite;
     });
   }
 
@@ -98,11 +113,17 @@ class _HomepageState extends State<Homepage> {
             ),
             const SizedBox(height: 20),
             Expanded(
-              child: RecipeListWidget(
-                recipes: widget.recipes,
-                toggleFavoriteStatus: toggleFavoriteStatus,
-                isGridView: _isGridView,
-              ),
+              child: _isGridView
+                  ? RecipeListWidget(
+                      recipes: _recipes,
+                      toggleFavoriteStatus: toggleFavoriteStatus,
+                      isGridView: _isGridView,
+                    )
+                  : RecipeListWidget(
+                      recipes: _recipes,
+                      toggleFavoriteStatus: toggleFavoriteStatus,
+                      isGridView: false,
+                    ),
             ),
           ],
         ),

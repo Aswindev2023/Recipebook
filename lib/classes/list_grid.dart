@@ -43,69 +43,75 @@ class RecipeListWidget extends StatelessWidget {
                   ),
             );
           },
-          child: GridTile(
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                images.isNotEmpty && images[0].existsSync()
-                    ? Image.file(
-                        File(images[0]
-                            .path), // Use File.path to get the string path
-                        fit: BoxFit.cover,
-                      )
-                    : const Placeholder(),
-                Positioned(
-                  top: 5,
-                  right: 5,
-                  child: IconButton(
-                    onPressed: () {
-                      toggleFavoriteStatus(index);
-                    },
-                    icon: Icon(
-                      recipes[index].isFavorite
-                          ? Icons.favorite
-                          : Icons.favorite_border,
-                      color:
-                          recipes[index].isFavorite ? Colors.red : Colors.white,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 5,
-                  right: 5,
-                  child: PopupMenuButton(
-                    itemBuilder: (BuildContext context) => [
-                      const PopupMenuItem(
-                        child: Text("Share"),
-                      ),
-                      const PopupMenuItem(
-                        child: Text("Edit"),
-                      ),
-                      const PopupMenuItem(
-                        child: Text("Delete"),
-                      ),
-                    ],
-                    icon: const Icon(
-                      Icons.more_vert,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      recipe.name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+          child: Card(
+            elevation: 8,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: GridTile(
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    images.isNotEmpty && images[0].existsSync()
+                        ? Image.file(
+                            File(images[0].path),
+                            fit: BoxFit.cover,
+                          )
+                        : const Placeholder(),
+                    Positioned(
+                      top: 5,
+                      right: 5,
+                      child: IconButton(
+                        onPressed: () {
+                          toggleFavoriteStatus(index);
+                        },
+                        icon: Icon(
+                          recipes[index].isFavorite
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: recipes[index].isFavorite
+                              ? Colors.red
+                              : Colors.white,
+                        ),
                       ),
                     ),
-                  ),
+                    Positioned(
+                      bottom: 5,
+                      right: 5,
+                      child: PopupMenuButton(
+                        itemBuilder: (BuildContext context) => [
+                          const PopupMenuItem(
+                            child: Text("Share"),
+                          ),
+                          const PopupMenuItem(
+                            child: Text("Edit"),
+                          ),
+                          const PopupMenuItem(
+                            child: Text("Delete"),
+                          ),
+                        ],
+                        icon: const Icon(
+                          Icons.more_vert,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          recipe.name,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 23,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         );
@@ -133,7 +139,7 @@ class RecipeListWidget extends StatelessWidget {
             elevation: 8,
             child: ListTile(
               leading: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(4),
                 child: Image.file(
                   File((recipe.imagePaths.isNotEmpty
                       ? recipe.imagePaths[0]

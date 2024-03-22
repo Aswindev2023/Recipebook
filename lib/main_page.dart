@@ -7,7 +7,6 @@ import 'package:recipe_book/model/recipe_categorymodel.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
 import 'package:recipe_book/model/steps_model.dart';
 import 'package:recipe_book/pages/home_page.dart';
-import 'package:path_provider/path_provider.dart' as path_provider;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,24 +21,26 @@ Future<void> main() async {
     Hive.registerAdapter(CategoryModelAdapter());
   }
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final List<Recipe> recipes;
-  const MyApp({Key? key, required this.recipes}) : super(key: key);
+  const MyApp({
+    Key? key,
+  }) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(recipes: recipes),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatelessWidget {
-  final List<Recipe> recipes;
-  const MyHomePage({Key? key, required this.recipes}) : super(key: key);
+  const MyHomePage({
+    Key? key,
+  }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,8 +104,7 @@ class MyHomePage extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    Homepage(recipes: recipes)));
+                                builder: (context) => const Homepage()));
                       },
                       style: TextButton.styleFrom(
                         backgroundColor: const Color.fromARGB(255, 26, 243, 34),

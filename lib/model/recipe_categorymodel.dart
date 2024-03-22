@@ -7,7 +7,10 @@ class CategoryModel {
   int? id;
 
   @HiveField(1)
-  final List<String> category;
+  final String categoryName;
 
-  CategoryModel({required this.category, this.id});
+  @HiveField(2)
+  final String image;
+
+  CategoryModel({required this.categoryName, required this.image, this.id});
 }
