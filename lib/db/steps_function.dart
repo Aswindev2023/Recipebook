@@ -25,3 +25,9 @@ Future<void> deleteSteps(int id) async {
   steps.delete(id);
   getSteps();
 }
+
+Future<void> updateSteps(StepsModel value, int id) async {
+  final steps = await Hive.openBox<StepsModel>('Step_db');
+  steps.put(value.id, value);
+  getSteps();
+}

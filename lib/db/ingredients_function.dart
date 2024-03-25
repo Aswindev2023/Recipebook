@@ -26,3 +26,9 @@ Future<void> deleteIngredients(int id) async {
   ingredients.delete(id);
   getIngredients();
 }
+
+Future<void> updateIngredients(IngredientsModel value, int id) async {
+  final ingredients = await Hive.openBox<IngredientsModel>('Ingredients_db');
+  ingredients.put(value.id, value);
+  getIngredients();
+}

@@ -13,15 +13,27 @@ void addCategory(CategoryModel value) async {
   categoryListNotifier.notifyListeners();
 }
 
-Future<void> getCategory() async {
+/*Future<void> getCategory() async {
   final categories = await Hive.openBox<CategoryModel>('Category_db');
   categoryListNotifier.value.clear();
   categoryListNotifier.value.addAll(categories.values);
   categoryListNotifier.notifyListeners();
+}*/
+Future<List<String>> getCategory() async {
+  final categories = await Hive.openBox<CategoryModel>('Category_db');
+  List<String> categoryNames =
+      categories.values.map((category) => category.categoryName).toList();
+  return categoryNames;
 }
 
 Future<void> deleteCategory(int id) async {
   final categories = await Hive.openBox<CategoryModel>('Category_db');
   categories.delete(id);
+  getCategory();
+}
+
+Future<void> updateCategory(CategoryModel value, int id) async {
+  final categories = await Hive.openBox<CategoryModel>('Category_db');
+  categories.put(value.id, value);
   getCategory();
 }

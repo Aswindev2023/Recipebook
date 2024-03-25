@@ -1,5 +1,7 @@
-import 'package:file_picker/file_picker.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:recipe_book/db/category_functions.dart';
 import 'package:recipe_book/model/recipe_categorymodel.dart';
 
@@ -11,26 +13,17 @@ class AddCategory extends StatefulWidget {
 }
 
 class _AddCategoryState extends State<AddCategory> {
-  PlatformFile? _imageFile;
+  File? _imageFile;
   final TextEditingController _nameController = TextEditingController();
 
   Future<void> _pickImage() async {
-    try {
-      FilePickerResult? result =
-          await FilePicker.platform.pickFiles(type: FileType.image);
-      if (result == null) {
-        return;
-      }
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
 
+    if (pickedImage != null) {
       setState(() {
-        _imageFile = result.files.first;
+        _imageFile = File(pickedImage.path);
       });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-        ),
-      );
     }
   }
 
@@ -66,23 +59,25 @@ class _AddCategoryState extends State<AddCategory> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            GestureDetector(
-              onTap: _pickImage,
-              child: _imageFile == null
-                  ? Container(
-                      width: 150,
-                      height: 150,
-                      color: Colors.grey[300],
-                      child: Icon(Icons.add_a_photo),
-                    )
-                  : Image.memory(
-                      _imageFile!.bytes!,
-                      width: 150,
-                      height: 150,
-                      fit: BoxFit.cover,
-                    ),
+            Center(
+              child: GestureDetector(
+                onTap: _pickImage,
+                child: _imageFile == null
+                    ? Container(
+                        width: 150,
+                        height: 150,
+                        color: Colors.grey[300],
+                        child: const Icon(Icons.add_a_photo),
+                      )
+                    : Image.file(
+                        _imageFile!,
+                        width: 150,
+                        height: 150,
+                        fit: BoxFit.cover,
+                      ),
+              ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextField(
               controller: _nameController,
               decoration: const InputDecoration(
@@ -92,18 +87,20 @@ class _AddCategoryState extends State<AddCategory> {
             ),
             const SizedBox(height: 20),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: () {
-                    clearButton();
-                  },
-                  child: const Text('clear'),
+                  onPressed: clearButton,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
+                  child: const Text('Clear'),
                 ),
-                const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
-                    saveCategory();
-                  },
+                  onPressed: saveCategory,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                  ),
                   child: const Text('Save'),
                 ),
               ],
@@ -119,7 +116,7 @@ class _AddCategoryState extends State<AddCategory> {
       String categoryName = _nameController.text;
       CategoryModel category = CategoryModel(
         categoryName: categoryName,
-        image: _imageFile?.path ?? '',
+        image: _imageFile!.path,
       );
 
       addCategory(category);

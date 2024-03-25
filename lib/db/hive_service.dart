@@ -1,4 +1,4 @@
-// ignore_for_file: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member
+// ignore_for_file: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member, no_leading_underscores_for_local_identifiers
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -23,5 +23,11 @@ Future<void> getRecipe() async {
 Future<void> deleteRecipe(int id) async {
   final recipes = await Hive.openBox<Recipe>('recipeBook_db');
   recipes.delete(id);
+  getRecipe();
+}
+
+Future<void> updateRecipe(Recipe value, int id) async {
+  final recipes = await Hive.openBox<Recipe>('recipeBook_db');
+  await recipes.put(value.id, value);
   getRecipe();
 }

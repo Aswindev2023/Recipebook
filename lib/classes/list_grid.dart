@@ -7,6 +7,7 @@ import 'package:recipe_book/model/recipebook_model.dart';
 class RecipeListWidget extends StatelessWidget {
   final List<Recipe> recipes;
   final Function(int) toggleFavoriteStatus;
+
   final bool isGridView;
 
   const RecipeListWidget({

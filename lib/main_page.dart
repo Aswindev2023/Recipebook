@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:recipe_book/model/Ingredients_model.dart';
 import 'package:recipe_book/model/recipe_categorymodel.dart';
-//import 'package:recipe_book/db/type_adapter.dart';
+
 import 'package:recipe_book/model/recipebook_model.dart';
 import 'package:recipe_book/model/steps_model.dart';
 import 'package:recipe_book/pages/home_page.dart';
