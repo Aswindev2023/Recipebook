@@ -7,7 +7,10 @@ class StepsModel {
   int? id;
 
   @HiveField(1)
+  int recipeId;
+
+  @HiveField(2)
   final List<String> steps;
 
-  StepsModel({required this.steps, this.id});
+  StepsModel({required this.recipeId, required this.steps, this.id});
 }

@@ -34,14 +34,15 @@ class RecipeListWidget extends StatelessWidget {
         final Recipe recipe = recipes[index];
         final List<File> images =
             recipe.imagePaths.map((path) => File(path)).toList();
+
         return GestureDetector(
           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      const Placeholder() // ViewRecipe(recipe: recipe),
-                  ),
+                builder: (context) => const Placeholder(),
+                // builder: (context) => ViewRecipe(recipe: recipe),
+              ),
             );
           },
           child: Card(
@@ -100,12 +101,26 @@ class RecipeListWidget extends StatelessWidget {
                       alignment: Alignment.bottomLeft,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          recipe.name,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 23,
-                            fontWeight: FontWeight.bold,
+                        child: ShaderMask(
+                          shaderCallback: (Rect bounds) {
+                            return LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Color.fromARGB(255, 94, 93, 93)
+                                    .withOpacity(0.4),
+                                Color.fromARGB(0, 75, 75, 75).withOpacity(0.3),
+                              ],
+                            ).createShader(bounds);
+                          },
+                          blendMode: BlendMode.overlay,
+                          child: Text(
+                            recipe.name,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 23,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),

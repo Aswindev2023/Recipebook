@@ -21,12 +21,16 @@ class Recipe {
   @HiveField(5)
   String time;
 
+  @HiveField(6)
+  final String? category;
+
   Recipe({
     required this.name,
     required this.description,
     required this.imagePaths,
     this.isFavorite = false,
     required this.time,
+    this.category,
     this.id,
   });
 }

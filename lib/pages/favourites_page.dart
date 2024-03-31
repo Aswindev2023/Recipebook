@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_book/classes/list_grid.dart';
+import 'package:recipe_book/db/hive_service.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
 import 'package:recipe_book/classes/bottomnavigationbar.dart';
 
@@ -13,12 +14,44 @@ class Favorites extends StatefulWidget {
 }
 
 class _FavoritesState extends State<Favorites> {
+  late List<Recipe> _favoriteRecipes;
   bool _isGridView = true;
   final int _selectedIndex = 2;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadFavoriteRecipes();
+  }
+
+  Future<void> _loadFavoriteRecipes() async {
+    print('Loading favorite recipes...');
+    List<Recipe> favoriteRecipes = await getFavoriteRecipes();
+    print('Favorite recipes loaded: $favoriteRecipes');
+    setState(() {
+      _favoriteRecipes = favoriteRecipes;
+    });
+  }
+
   void toggleFavoriteStatus(int index) {
-    // Placeholder function for toggleFavoriteStatus
-    // Even if it's not used in this page
+    print('Toggling favorite status for recipe at index $index...');
+    setState(() {
+      widget.recipes[index].isFavorite = !widget.recipes[index].isFavorite;
+    });
+    print(
+        'Recipe at index $index toggled favorite status: ${widget.recipes[index].isFavorite}');
+
+    _updateFavoriteRecipes();
+  }
+
+  void _updateFavoriteRecipes() {
+    List<Recipe> favoriteRecipes =
+        widget.recipes.where((recipe) => recipe.isFavorite).toList();
+
+    print('Updating favorite recipes...');
+    saveFavoriteRecipes(favoriteRecipes);
+    print('Favorite recipes updated.');
+    _loadFavoriteRecipes();
   }
 
   @override

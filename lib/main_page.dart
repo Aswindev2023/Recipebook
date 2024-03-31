@@ -11,10 +11,11 @@ import 'package:recipe_book/pages/home_page.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
+
   if (!Hive.isAdapterRegistered(RecipeAdapter().typeId) &&
+      !Hive.isAdapterRegistered(StepsModelAdapter().typeId) &&
       !Hive.isAdapterRegistered(IngredientsModelAdapter().typeId) &&
-      !Hive.isAdapterRegistered(CategoryModelAdapter().typeId) &&
-      !Hive.isAdapterRegistered(StepsModelAdapter().typeId)) {
+      !Hive.isAdapterRegistered(CategoryModelAdapter().typeId)) {
     Hive.registerAdapter(RecipeAdapter());
     Hive.registerAdapter(StepsModelAdapter());
     Hive.registerAdapter(IngredientsModelAdapter());

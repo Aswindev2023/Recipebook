@@ -5,7 +5,13 @@ part 'Ingredients_model.g.dart';
 class IngredientsModel {
   @HiveField(0)
   int? id;
+
   @HiveField(1)
+  int recipeId;
+
+  @HiveField(2)
   final List<String> ingredients;
-  IngredientsModel({required this.ingredients, this.id});
+  IngredientsModel(
+      {required List<String> ingredients, required this.recipeId, this.id})
+      : ingredients = ingredients.isEmpty ? [] : List.from(ingredients);
 }

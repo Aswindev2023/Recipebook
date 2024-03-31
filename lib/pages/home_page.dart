@@ -17,6 +17,7 @@ class _HomepageState extends State<Homepage> {
   late List<Recipe> _recipes;
   bool _isGridView = true;
   final int _selectedIndex = 0;
+
   @override
   void initState() {
     super.initState();
@@ -25,16 +26,29 @@ class _HomepageState extends State<Homepage> {
   }
 
   Future<void> _loadRecipes() async {
-    await getRecipe();
-    setState(() {
-      _recipes = recipeListNotifier.value;
-    });
+    if (recipeListNotifier.value != null) {
+      _recipes = List.of(recipeListNotifier.value);
+    } else {
+      // Handle the case where recipeListNotifier.value is null or not initialized
+      // For example, you could assign an empty list as a fallback
+      print('empty recipe list');
+    }
   }
 
   void toggleFavoriteStatus(int index) {
     setState(() {
       _recipes[index].isFavorite = !_recipes[index].isFavorite;
     });
+    _updateFavoriteRecipes();
+    print(
+        'Recipe at index $index toggled favorite status: ${_recipes[index].isFavorite}');
+  }
+
+  Future<void> _updateFavoriteRecipes() async {
+    List<Recipe> favoriteRecipes =
+        _recipes.where((recipe) => recipe.isFavorite).toList();
+    await saveFavoriteRecipes(favoriteRecipes);
+    print('Updated favorite recipes: $favoriteRecipes');
   }
 
   @override

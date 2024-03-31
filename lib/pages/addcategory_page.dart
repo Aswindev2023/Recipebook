@@ -97,7 +97,9 @@ class _AddCategoryState extends State<AddCategory> {
                   child: const Text('Clear'),
                 ),
                 ElevatedButton(
-                  onPressed: saveCategory,
+                  onPressed: () {
+                    saveCategory();
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                   ),
@@ -120,8 +122,14 @@ class _AddCategoryState extends State<AddCategory> {
       );
 
       addCategory(category);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Category Added'),
+        ),
+      );
 
       clearButton();
+      Navigator.pop(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

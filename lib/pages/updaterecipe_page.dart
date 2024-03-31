@@ -1,4 +1,4 @@
-import 'dart:io';
+/*import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:recipe_book/classes/bottomnavigationbar.dart';
 import 'package:recipe_book/db/hive_service.dart';
@@ -356,7 +356,7 @@ class _UpdateRecipeState extends State<UpdateRecipe> {
         isFavorite: false,
         time: recipeCooktime,
       );
-      StepsModel stepsModel = StepsModel(steps: steps);
+      StepsModel stepsModel = StepsModel(steps: steps, recipeId: );
       IngredientsModel ingredientsModel =
           IngredientsModel(ingredients: ingredients);
 
@@ -375,3 +375,4 @@ class _UpdateRecipeState extends State<UpdateRecipe> {
     }
   }
 }
+*/

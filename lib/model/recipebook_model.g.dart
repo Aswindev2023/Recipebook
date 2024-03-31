@@ -22,6 +22,7 @@ class RecipeAdapter extends TypeAdapter<Recipe> {
       imagePaths: (fields[1] as List).cast<String>(),
       isFavorite: fields[4] as bool,
       time: fields[5] as String,
+      category: fields[6] as String?,
       id: fields[0] as int?,
     );
   }
@@ -29,7 +30,7 @@ class RecipeAdapter extends TypeAdapter<Recipe> {
   @override
   void write(BinaryWriter writer, Recipe obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class RecipeAdapter extends TypeAdapter<Recipe> {
       ..writeByte(4)
       ..write(obj.isFavorite)
       ..writeByte(5)
-      ..write(obj.time);
+      ..write(obj.time)
+      ..writeByte(6)
+      ..write(obj.category);
   }
 
   @override

@@ -17,7 +17,8 @@ class StepsModelAdapter extends TypeAdapter<StepsModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return StepsModel(
-      steps: (fields[1] as List).cast<String>(),
+      recipeId: fields[1] as int,
+      steps: (fields[2] as List).cast<String>(),
       id: fields[0] as int?,
     );
   }
@@ -25,10 +26,12 @@ class StepsModelAdapter extends TypeAdapter<StepsModel> {
   @override
   void write(BinaryWriter writer, StepsModel obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
+      ..write(obj.recipeId)
+      ..writeByte(2)
       ..write(obj.steps);
   }
 
