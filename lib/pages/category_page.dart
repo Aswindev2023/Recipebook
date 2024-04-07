@@ -25,10 +25,12 @@ class _CategoryState extends State<Category> {
   }
 
   Future<void> getCategory() async {
+    print('Fetching categories...');
     final categories = await Hive.openBox<CategoryModel>('Category_db');
     setState(() {
       _categories = categories.values.toList();
     });
+    print('Categories fetched: $_categories');
   }
 
   @override

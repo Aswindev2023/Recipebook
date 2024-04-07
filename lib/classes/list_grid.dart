@@ -2,27 +2,23 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
-//import 'package:recipe_book/pages/view_recipe.dart';
 
 class RecipeListWidget extends StatelessWidget {
-  final List<Recipe> recipes;
-  final Function(int) toggleFavoriteStatus;
-
   final bool isGridView;
+  final List<RecipeDetails> recipes;
 
   const RecipeListWidget({
     Key? key,
-    required this.recipes,
-    required this.toggleFavoriteStatus,
     required this.isGridView,
+    required this.recipes,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return isGridView ? _buildGridView() : _buildListView();
+    return isGridView ? _buildGridView(recipes) : _buildListView(recipes);
   }
 
-  Widget _buildGridView() {
+  Widget _buildGridView(List<RecipeDetails> recipes) {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -31,10 +27,7 @@ class RecipeListWidget extends StatelessWidget {
       ),
       itemCount: recipes.length,
       itemBuilder: (BuildContext context, int index) {
-        final Recipe recipe = recipes[index];
-        final List<File> images =
-            recipe.imagePaths.map((path) => File(path)).toList();
-
+        final RecipeDetails recipe = recipes[index];
         return GestureDetector(
           onTap: () {
             Navigator.push(
@@ -53,31 +46,35 @@ class RecipeListWidget extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    images.isNotEmpty && images[0].existsSync()
-                        ? Image.file(
-                            File(images[0].path),
-                            fit: BoxFit.cover,
-                          )
-                        : const Placeholder(),
+                    if (recipe.imageUrls.isNotEmpty)
+                      Image.file(
+                        File(recipe.imageUrls[
+                            0]), // Assuming imageUrls is a list of file paths
+                        fit: BoxFit.cover,
+                        errorBuilder: (BuildContext context, Object exception,
+                            StackTrace? stackTrace) {
+                          return const Center(
+                            child: Icon(Icons.error),
+                          );
+                        },
+                      )
+                    else
+                      const Center(
+                        child: Icon(Icons.error),
+                      ),
                     Positioned(
                       top: 5,
                       right: 5,
                       child: IconButton(
-                        onPressed: () {
-                          toggleFavoriteStatus(index);
-                        },
-                        icon: Icon(
-                          recipes[index].isFavorite
-                              ? Icons.favorite
-                              : Icons.favorite_border,
-                          color: recipes[index].isFavorite
-                              ? Colors.red
-                              : Colors.white,
+                        onPressed: () {},
+                        icon: const Icon(
+                          Icons.favorite,
+                          color: Colors.white,
                         ),
                       ),
                     ),
                     Positioned(
-                      bottom: 5,
+                      bottom: 2,
                       right: 5,
                       child: PopupMenuButton(
                         itemBuilder: (BuildContext context) => [
@@ -107,9 +104,10 @@ class RecipeListWidget extends StatelessWidget {
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                               colors: [
-                                Color.fromARGB(255, 94, 93, 93)
+                                const Color.fromARGB(255, 94, 93, 93)
                                     .withOpacity(0.4),
-                                Color.fromARGB(0, 75, 75, 75).withOpacity(0.3),
+                                const Color.fromARGB(0, 75, 75, 75)
+                                    .withOpacity(0.3),
                               ],
                             ).createShader(bounds);
                           },
@@ -135,11 +133,11 @@ class RecipeListWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildListView() {
+  Widget _buildListView(recipes) {
     return ListView.builder(
       itemCount: recipes.length,
       itemBuilder: (BuildContext context, int index) {
-        final Recipe recipe = recipes[index];
+        final RecipeDetails recipe = recipes[index];
         return GestureDetector(
           onTap: () {
             Navigator.push(
@@ -157,12 +155,12 @@ class RecipeListWidget extends StatelessWidget {
               leading: ClipRRect(
                 borderRadius: BorderRadius.circular(4),
                 child: Image.file(
-                  File((recipe.imagePaths.isNotEmpty
-                      ? recipe.imagePaths[0]
-                      : '')),
-                  width: 60,
-                  height: 130,
+                  File(recipe.imageUrls.isNotEmpty
+                      ? recipe.imageUrls[0]
+                      : ''), // Assuming imageUrls is a list of file paths
                   fit: BoxFit.cover,
+                  width: 60, // Set width according to your design
+                  height: 60, // Set height according to your design
                 ),
               ),
               title: Text(recipe.name),
@@ -170,16 +168,8 @@ class RecipeListWidget extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    onPressed: () {
-                      toggleFavoriteStatus(index);
-                    },
-                    icon: Icon(
-                      recipes[index].isFavorite
-                          ? Icons.favorite
-                          : Icons.favorite_border,
-                      color:
-                          recipes[index].isFavorite ? Colors.red : Colors.black,
-                    ),
+                    onPressed: () {},
+                    icon: const Icon(Icons.favorite),
                   ),
                   PopupMenuButton<String>(
                     onSelected: (value) {},
@@ -200,7 +190,8 @@ class RecipeListWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              subtitle: Text(recipe.description),
+              subtitle:
+                  Text('Cook time: ${recipe.cookTime}${recipe.selectedUnit}'),
             ),
           ),
         );

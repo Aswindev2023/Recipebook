@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:recipe_book/pages/addRecipe_page.dart';
 import 'package:recipe_book/pages/category_page.dart';
-import 'package:recipe_book/pages/favourites_page.dart';
+
 import 'package:recipe_book/pages/home_page.dart';
-import 'package:recipe_book/pages/new_recipe.dart';
 
 class NavigationService {
   static void navigateToHomePage(BuildContext context) {
@@ -22,17 +22,14 @@ class NavigationService {
   static void navigateToFavoritesPage(BuildContext context) {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-          builder: (context) => const Favorites(
-                recipes: [],
-              )),
+      MaterialPageRoute(builder: (context) => const Placeholder()),
     );
   }
 
   static void navigateToNewRecipePage(BuildContext context) {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const NewRecipe()),
+      MaterialPageRoute(builder: (context) => MyFormPage()),
     );
   }
 }

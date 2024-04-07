@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_book/classes/bottomnavigationbar.dart';
 import 'package:recipe_book/classes/list_grid.dart';
-import 'package:recipe_book/db/hive_service.dart';
+import 'package:recipe_book/db/recipe_functions.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
 
 class Homepage extends StatefulWidget {
@@ -14,41 +14,20 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  late List<Recipe> _recipes;
   bool _isGridView = true;
   final int _selectedIndex = 0;
-
+  List<RecipeDetails> _recipes = [];
   @override
   void initState() {
     super.initState();
-    _recipes = [];
-    _loadRecipes();
+    _fetchRecipes();
   }
 
-  Future<void> _loadRecipes() async {
-    if (recipeListNotifier.value != null) {
-      _recipes = List.of(recipeListNotifier.value);
-    } else {
-      // Handle the case where recipeListNotifier.value is null or not initialized
-      // For example, you could assign an empty list as a fallback
-      print('empty recipe list');
-    }
-  }
-
-  void toggleFavoriteStatus(int index) {
+  Future<void> _fetchRecipes() async {
+    final List<RecipeDetails> recipes = await getRecipes();
     setState(() {
-      _recipes[index].isFavorite = !_recipes[index].isFavorite;
+      _recipes = recipes; // Update state with fetched recipes
     });
-    _updateFavoriteRecipes();
-    print(
-        'Recipe at index $index toggled favorite status: ${_recipes[index].isFavorite}');
-  }
-
-  Future<void> _updateFavoriteRecipes() async {
-    List<Recipe> favoriteRecipes =
-        _recipes.where((recipe) => recipe.isFavorite).toList();
-    await saveFavoriteRecipes(favoriteRecipes);
-    print('Updated favorite recipes: $favoriteRecipes');
   }
 
   @override
@@ -129,14 +108,12 @@ class _HomepageState extends State<Homepage> {
             Expanded(
               child: _isGridView
                   ? RecipeListWidget(
-                      recipes: _recipes,
-                      toggleFavoriteStatus: toggleFavoriteStatus,
                       isGridView: _isGridView,
+                      recipes: _recipes,
                     )
                   : RecipeListWidget(
-                      recipes: _recipes,
-                      toggleFavoriteStatus: toggleFavoriteStatus,
                       isGridView: false,
+                      recipes: _recipes,
                     ),
             ),
           ],

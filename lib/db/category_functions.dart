@@ -13,12 +13,6 @@ void addCategory(CategoryModel value) async {
   categoryListNotifier.notifyListeners();
 }
 
-/*Future<void> getCategory() async {
-  final categories = await Hive.openBox<CategoryModel>('Category_db');
-  categoryListNotifier.value.clear();
-  categoryListNotifier.value.addAll(categories.values);
-  categoryListNotifier.notifyListeners();
-}*/
 Future<List<String>> getCategory() async {
   final categories = await Hive.openBox<CategoryModel>('Category_db');
   List<String> categoryNames =

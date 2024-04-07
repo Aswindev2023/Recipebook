@@ -1,17 +1,16 @@
 import 'package:hive_flutter/hive_flutter.dart';
 part 'Ingredients_model.g.dart';
 
-@HiveType(typeId: 1)
-class IngredientsModel {
+@HiveType(typeId: 3)
+class RecipeIngredients {
   @HiveField(0)
-  int? id;
+  int id;
 
   @HiveField(1)
-  int recipeId;
+  List<String> ingredient;
 
-  @HiveField(2)
-  final List<String> ingredients;
-  IngredientsModel(
-      {required List<String> ingredients, required this.recipeId, this.id})
-      : ingredients = ingredients.isEmpty ? [] : List.from(ingredients);
+  RecipeIngredients({
+    required this.id,
+    required this.ingredient,
+  });
 }

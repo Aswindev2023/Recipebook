@@ -2,35 +2,36 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive/hive.dart';
 part 'recipebook_model.g.dart';
 
-@HiveType(typeId: 4)
-class Recipe {
+@HiveType(typeId: 0)
+class RecipeDetails {
   @HiveField(0)
-  int? id;
+  int id; // Add ID field
+
   @HiveField(1)
-  List<String> imagePaths;
+  final String name;
 
   @HiveField(2)
-  String name;
+  final String description;
 
   @HiveField(3)
-  String description;
+  final String cookTime;
 
   @HiveField(4)
-  bool isFavorite;
+  final String selectedCategory;
 
   @HiveField(5)
-  String time;
+  final List<String> imageUrls;
 
   @HiveField(6)
-  final String? category;
+  final String selectedUnit;
 
-  Recipe({
+  RecipeDetails({
+    required this.id,
     required this.name,
     required this.description,
-    required this.imagePaths,
-    this.isFavorite = false,
-    required this.time,
-    this.category,
-    this.id,
+    required this.cookTime,
+    required this.selectedCategory,
+    required this.imageUrls,
+    required this.selectedUnit,
   });
 }

@@ -12,13 +12,13 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
 
-  if (!Hive.isAdapterRegistered(RecipeAdapter().typeId) &&
-      !Hive.isAdapterRegistered(StepsModelAdapter().typeId) &&
-      !Hive.isAdapterRegistered(IngredientsModelAdapter().typeId) &&
+  if (!Hive.isAdapterRegistered(RecipeDetailsAdapter().typeId) &&
+      !Hive.isAdapterRegistered(RecipeStepsAdapter().typeId) &&
+      !Hive.isAdapterRegistered(RecipeIngredientsAdapter().typeId) &&
       !Hive.isAdapterRegistered(CategoryModelAdapter().typeId)) {
-    Hive.registerAdapter(RecipeAdapter());
-    Hive.registerAdapter(StepsModelAdapter());
-    Hive.registerAdapter(IngredientsModelAdapter());
+    Hive.registerAdapter(RecipeDetailsAdapter());
+    Hive.registerAdapter(RecipeStepsAdapter());
+    Hive.registerAdapter(RecipeIngredientsAdapter());
     Hive.registerAdapter(CategoryModelAdapter());
   }
 

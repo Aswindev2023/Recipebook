@@ -6,45 +6,42 @@ part of 'recipebook_model.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class RecipeAdapter extends TypeAdapter<Recipe> {
+class RecipeDetailsAdapter extends TypeAdapter<RecipeDetails> {
   @override
-  final int typeId = 4;
+  final int typeId = 0;
 
   @override
-  Recipe read(BinaryReader reader) {
+  RecipeDetails read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Recipe(
-      name: fields[2] as String,
-      description: fields[3] as String,
-      imagePaths: (fields[1] as List).cast<String>(),
-      isFavorite: fields[4] as bool,
-      time: fields[5] as String,
-      category: fields[6] as String?,
-      id: fields[0] as int?,
+    return RecipeDetails(
+      id: fields[0] as int,
+      name: fields[1] as String,
+      description: fields[2] as String,
+      cookTime: fields[3] as String,
+      selectedCategory: fields[4] as String,
+      imageUrls: (fields[5] as List).cast<String>(),
     );
   }
 
   @override
-  void write(BinaryWriter writer, Recipe obj) {
+  void write(BinaryWriter writer, RecipeDetails obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.imagePaths)
-      ..writeByte(2)
       ..write(obj.name)
-      ..writeByte(3)
+      ..writeByte(2)
       ..write(obj.description)
+      ..writeByte(3)
+      ..write(obj.cookTime)
       ..writeByte(4)
-      ..write(obj.isFavorite)
+      ..write(obj.selectedCategory)
       ..writeByte(5)
-      ..write(obj.time)
-      ..writeByte(6)
-      ..write(obj.category);
+      ..write(obj.imageUrls);
   }
 
   @override
@@ -53,7 +50,7 @@ class RecipeAdapter extends TypeAdapter<Recipe> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is RecipeAdapter &&
+      other is RecipeDetailsAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

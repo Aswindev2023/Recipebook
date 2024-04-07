@@ -1,16 +1,16 @@
 import 'package:hive_flutter/hive_flutter.dart';
 part 'steps_model.g.dart';
 
-@HiveType(typeId: 3)
-class StepsModel {
+@HiveType(typeId: 1)
+class RecipeSteps {
   @HiveField(0)
-  int? id;
+  int id;
 
   @HiveField(1)
-  int recipeId;
+  List<String> step;
 
-  @HiveField(2)
-  final List<String> steps;
-
-  StepsModel({required this.recipeId, required this.steps, this.id});
+  RecipeSteps({
+    required this.id,
+    required this.step,
+  });
 }
