@@ -17,9 +17,8 @@ class RecipeStepsAdapter extends TypeAdapter<RecipeSteps> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return RecipeSteps(
-      id: fields[0] as int,
       step: (fields[1] as List).cast<String>(),
-    );
+    )..id = fields[0] as int;
   }
 
   @override

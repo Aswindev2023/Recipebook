@@ -10,8 +10,8 @@ import 'package:recipe_book/model/recipeform_model.dart'; // Assuming recipeform
 class RecipeFormFields {
   final TextEditingController nameController;
   final TextEditingController descriptionController;
-  String cookTime = ''; // String to store user-entered time
-  String _selectedUnit = 'Minutes'; // Default unit
+  String cookTime = '';
+  String? _selectedUnit = 'Minutes';
   List<String> _imageUrls = [];
   List<String> _steps = [];
   List<String> _ingredients = [];
@@ -25,14 +25,18 @@ class RecipeFormFields {
 
   RecipeFormFields()
       : nameController = TextEditingController(),
-        descriptionController = TextEditingController();
+        descriptionController = TextEditingController() {
+    print('Default unit initialized: $_selectedUnit');
+  }
 
   void setCookTime(String value) {
     cookTime = value;
   }
 
   void setUnit(String unit) {
+    print('Setting unit to: $unit');
     _selectedUnit = unit;
+    print('Selected unit updated: $_selectedUnit');
   }
 
   void setIngredients(List<String> ingredients) {
@@ -45,10 +49,6 @@ class RecipeFormFields {
 
   void setSelectedCategory(String? category) {
     _selectedCategory = category;
-  }
-
-  void clearIngredients() {
-    _ingredients.clear();
   }
 
   // Create a method to get the complete RecipeForm data
@@ -94,6 +94,7 @@ class RecipeFormFields {
 
 Widget buildImagePickerAndDisplay(RecipeFormFields recipeFormFields) {
   return ImagePickerAndDisplay(onImagesSelected: (List<String> urls) {
+    print('buildImagePickerAndDisplay:$urls');
     recipeFormFields._imageUrls = urls;
   });
 }
@@ -176,8 +177,13 @@ class CookTimeField extends StatefulWidget {
   final Function(String)
       onCookTimeChanged; // Callback for user-entered cook time
   final String? Function(String?) validator;
-  const CookTimeField(
-      {super.key, required this.onCookTimeChanged, required this.validator});
+  final Function(String) onUnitChanged;
+  const CookTimeField({
+    super.key,
+    required this.onCookTimeChanged,
+    required this.validator,
+    required this.onUnitChanged,
+  });
 
   @override
   State<CookTimeField> createState() => _CookTimeFieldState();
@@ -196,14 +202,19 @@ class _CookTimeFieldState extends State<CookTimeField> {
 
   void setUnit(String? unit) {
     if (unit != null) {
+      print('Unit received: $unit'); // Add this line for debugging
       setState(() {
         _selectedUnit = unit;
       });
+      widget.onUnitChanged(_selectedUnit);
+    } else {
+      print('Received null unit'); // Add this line for debugging
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    print('Building CookTimeField widget with selected unit: $_selectedUnit');
     return Row(
       children: [
         SizedBox(

@@ -71,23 +71,24 @@ class _DynamicIngredientFieldState extends State<DynamicIngredientField> {
                       },
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.remove_circle),
-                    onPressed: controllers.length > 1
-                        ? () {
-                            setState(() {
-                              controllers.removeAt(index);
-                              _notifyParent();
-                            });
-                          }
-                        : null,
-                  ),
+                  if (controllers.length > 1)
+                    IconButton(
+                      icon: const Icon(Icons.remove_circle),
+                      onPressed: controllers.length > 1
+                          ? () {
+                              setState(() {
+                                controllers.removeAt(index);
+                                _notifyParent();
+                              });
+                            }
+                          : null,
+                    ),
                 ],
               ),
             );
           },
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 1),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

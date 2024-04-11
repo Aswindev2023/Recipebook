@@ -4,13 +4,12 @@ part 'steps_model.g.dart';
 @HiveType(typeId: 1)
 class RecipeSteps {
   @HiveField(0)
-  int id;
+  int id = 0;
 
   @HiveField(1)
   List<String> step;
 
   RecipeSteps({
-    required this.id,
     required this.step,
   });
 }

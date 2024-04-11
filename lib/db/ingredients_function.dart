@@ -26,3 +26,22 @@ Future<List<RecipeIngredients>> getIngredients() async {
 
   return ingredients;
 }
+
+void deleteIngredient(int? id) async {
+  if (id == null) {
+    print('Ingredient ID cannot be null');
+    return;
+  }
+  final ingredientsBox = await Hive.openBox<RecipeIngredients>('Ingredient_db');
+
+  if (ingredientsBox.containsKey(id)) {
+    await ingredientsBox.delete(id);
+
+    ingredientListNotifier.value = ingredientsBox.values.toList();
+    ingredientListNotifier.notifyListeners();
+
+    print('Deleted ingredient with ID: $id');
+  } else {
+    print('Ingredient with ID $id does not exist');
+  }
+}

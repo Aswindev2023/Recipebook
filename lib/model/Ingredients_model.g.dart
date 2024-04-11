@@ -17,9 +17,8 @@ class RecipeIngredientsAdapter extends TypeAdapter<RecipeIngredients> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return RecipeIngredients(
-      id: fields[0] as int,
       ingredient: (fields[1] as List).cast<String>(),
-    );
+    )..id = fields[0] as int;
   }
 
   @override

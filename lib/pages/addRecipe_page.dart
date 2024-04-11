@@ -7,6 +7,7 @@ import 'package:recipe_book/db/step_function.dart';
 import 'package:recipe_book/model/Ingredients_model.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
 import 'package:recipe_book/model/steps_model.dart';
+import 'package:recipe_book/pages/home_page.dart';
 
 class MyFormPage extends StatefulWidget {
   const MyFormPage({Key? key}) : super(key: key);
@@ -26,8 +27,15 @@ class _MyFormPageState extends State<MyFormPage> {
     recipeFormFields = RecipeFormFields();
   }
 
+  void updateSelectedUnit(String unit) {
+    setState(() {
+      recipeFormFields.setUnit(unit);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    print('Building MyFormPage widget');
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -63,6 +71,7 @@ class _MyFormPageState extends State<MyFormPage> {
                 CookTimeField(
                   onCookTimeChanged: recipeFormFields.setCookTime,
                   validator: recipeFormFields.validateCookTime,
+                  onUnitChanged: updateSelectedUnit,
                 ),
                 const SizedBox(height: 20),
                 buildCategoryDropdown(recipeFormFields),
@@ -77,31 +86,39 @@ class _MyFormPageState extends State<MyFormPage> {
                 const SizedBox(
                   height: 20,
                 ),
-                Row(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        _saveForm();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                Padding(
+                  padding: const EdgeInsets.only(left: 10, right: 10),
+                  child: Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          _saveForm();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                        ),
+                        child: const Text('Save',
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 20)),
                       ),
-                      child: const Text('Save',
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                    const SizedBox(width: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Clear all form fields
-                        _formKey.currentState?.reset();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                      const SizedBox(width: 160),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MyFormPage()),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                        ),
+                        child: const Text('Clear',
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 20)),
                       ),
-                      child: const Text('Clear',
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -116,31 +133,34 @@ class _MyFormPageState extends State<MyFormPage> {
 
   void _saveForm() {
     if (_formKey.currentState!.validate()) {
-      print('Form is valid');
-      // Save the form data or perform other actions
       final recipe = RecipeDetails(
         name: recipeFormFields.nameController.text,
         description: recipeFormFields.descriptionController.text,
         cookTime: recipeFormFields.cookTime,
-        id: 0,
         selectedCategory: recipeFormFields.selectedCategory!,
         imageUrls: recipeFormFields.imageUrls,
         selectedUnit: recipeFormFields.selectedUnit!,
       );
+      print('addrecipe:${recipe.imageUrls}');
       addRecipe(recipe);
       final ingredients = RecipeIngredients(
-        id: 0,
         ingredient: recipeFormFields.ingredients,
       );
       addIngredient(ingredients);
       final steps = RecipeSteps(
-        id: 0,
         step: recipeFormFields.steps,
       );
       addStep(steps);
-      _formKey.currentState?.reset();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Recipe Added'),
+        ),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const Homepage()),
+      );
     } else {
-      // Validation failed, display error messages
       setState(() {});
     }
   }

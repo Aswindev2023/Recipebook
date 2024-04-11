@@ -17,6 +17,8 @@ class _HomepageState extends State<Homepage> {
   bool _isGridView = true;
   final int _selectedIndex = 0;
   List<RecipeDetails> _recipes = [];
+  List<RecipeDetails> _filteredRecipes = []; // Newly added
+  String _searchQuery = '';
   @override
   void initState() {
     super.initState();
@@ -26,7 +28,23 @@ class _HomepageState extends State<Homepage> {
   Future<void> _fetchRecipes() async {
     final List<RecipeDetails> recipes = await getRecipes();
     setState(() {
-      _recipes = recipes; // Update state with fetched recipes
+      _recipes = recipes;
+      _filteredRecipes = List.from(recipes);
+    });
+  }
+
+  void _filterRecipes(String query) {
+    setState(() {
+      _searchQuery = query;
+      if (query.isNotEmpty) {
+        _filteredRecipes = _recipes
+            .where((recipe) =>
+                recipe.name.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      } else {
+        _filteredRecipes =
+            List.from(_recipes); // Show all recipes if query is empty
+      }
     });
   }
 
@@ -101,7 +119,7 @@ class _HomepageState extends State<Homepage> {
                   hintStyle: TextStyle(fontSize: 15),
                   border: InputBorder.none,
                 ),
-                onChanged: (value) {},
+                onChanged: _filterRecipes,
               ),
             ),
             const SizedBox(height: 20),
@@ -109,11 +127,13 @@ class _HomepageState extends State<Homepage> {
               child: _isGridView
                   ? RecipeListWidget(
                       isGridView: _isGridView,
-                      recipes: _recipes,
+                      recipes:
+                          _searchQuery.isEmpty ? _recipes : _filteredRecipes,
                     )
                   : RecipeListWidget(
                       isGridView: false,
-                      recipes: _recipes,
+                      recipes:
+                          _searchQuery.isEmpty ? _recipes : _filteredRecipes,
                     ),
             ),
           ],

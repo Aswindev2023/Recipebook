@@ -29,7 +29,7 @@ class NavigationService {
   static void navigateToNewRecipePage(BuildContext context) {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => MyFormPage()),
+      MaterialPageRoute(builder: (context) => const MyFormPage()),
     );
   }
 }

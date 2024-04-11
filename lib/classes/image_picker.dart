@@ -2,9 +2,7 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 
 class ImagePickerAndDisplay extends StatefulWidget {
   final void Function(List<String> urls) onImagesSelected;
@@ -59,23 +57,9 @@ class _ImagePickerAndDisplayState extends State<ImagePickerAndDisplay> {
     if (pickedImages != null) {
       List<String> imagePaths = [];
       for (var pickedImage in pickedImages) {
-        // Read image file
         final File imageFile = File(pickedImage.path);
-        final img.Image? image = img.decodeImage(await imageFile.readAsBytes());
-
-        // Resize image
-        final img.Image resizedImage =
-            img.copyResize(image!, width: 800); // Adjust width as needed
-
-        // Save resized image to temporary file
-        final File resizedFile = File(
-            '${(await getTemporaryDirectory()).path}/${DateTime.now().millisecondsSinceEpoch}.jpg');
-        await resizedFile.writeAsBytes(img.encodeJpg(resizedImage,
-            quality: 85)); // Adjust quality if needed
-
-        // Get path of resized image
-        final String resizedImagePath = resizedFile.path;
-        imagePaths.add(resizedImagePath);
+        final String imagePath = imageFile.path;
+        imagePaths.add(imagePath);
       }
       setState(() {
         _imageUrls = List.from(_imageUrls)..addAll(imagePaths);

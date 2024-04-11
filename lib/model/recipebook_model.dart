@@ -5,7 +5,7 @@ part 'recipebook_model.g.dart';
 @HiveType(typeId: 0)
 class RecipeDetails {
   @HiveField(0)
-  int id; // Add ID field
+  int id = 0;
 
   @HiveField(1)
   final String name;
@@ -23,10 +23,9 @@ class RecipeDetails {
   final List<String> imageUrls;
 
   @HiveField(6)
-  final String selectedUnit;
+  final String? selectedUnit;
 
   RecipeDetails({
-    required this.id,
     required this.name,
     required this.description,
     required this.cookTime,

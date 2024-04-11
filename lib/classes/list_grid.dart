@@ -1,9 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:recipe_book/db/ingredients_function.dart';
+import 'package:recipe_book/db/recipe_functions.dart';
+import 'package:recipe_book/db/step_function.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
 
-class RecipeListWidget extends StatelessWidget {
+class RecipeListWidget extends StatefulWidget {
   final bool isGridView;
   final List<RecipeDetails> recipes;
 
@@ -14,11 +17,26 @@ class RecipeListWidget extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<RecipeListWidget> createState() => _RecipeListWidgetState();
+}
+
+class _RecipeListWidgetState extends State<RecipeListWidget> {
+  @override
   Widget build(BuildContext context) {
-    return isGridView ? _buildGridView(recipes) : _buildListView(recipes);
+    return widget.isGridView
+        ? _buildGridView(widget.recipes)
+        : _buildListView(widget.recipes);
   }
 
   Widget _buildGridView(List<RecipeDetails> recipes) {
+    if (recipes.isEmpty) {
+      return const Center(
+        child: Text(
+          'No recipes available.',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+      );
+    }
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -48,8 +66,7 @@ class RecipeListWidget extends StatelessWidget {
                   children: [
                     if (recipe.imageUrls.isNotEmpty)
                       Image.file(
-                        File(recipe.imageUrls[
-                            0]), // Assuming imageUrls is a list of file paths
+                        File(recipe.imageUrls[0]),
                         fit: BoxFit.cover,
                         errorBuilder: (BuildContext context, Object exception,
                             StackTrace? stackTrace) {
@@ -77,6 +94,15 @@ class RecipeListWidget extends StatelessWidget {
                       bottom: 2,
                       right: 5,
                       child: PopupMenuButton(
+                        onSelected: (value) {
+                          if (value == 'delete') {
+                            setState(() {
+                              deleteRecipe(recipe.id);
+                              deleteIngredient(recipe.id);
+                              deleteStep(recipe.id);
+                            });
+                          }
+                        },
                         itemBuilder: (BuildContext context) => [
                           const PopupMenuItem(
                             child: Text("Share"),
@@ -85,6 +111,7 @@ class RecipeListWidget extends StatelessWidget {
                             child: Text("Edit"),
                           ),
                           const PopupMenuItem(
+                            value: 'delete',
                             child: Text("Delete"),
                           ),
                         ],
@@ -133,7 +160,15 @@ class RecipeListWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildListView(recipes) {
+  Widget _buildListView(List<RecipeDetails> recipes) {
+    if (recipes.isEmpty) {
+      return const Center(
+        child: Text(
+          'No recipes available.',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+      );
+    }
     return ListView.builder(
       itemCount: recipes.length,
       itemBuilder: (BuildContext context, int index) {
@@ -152,47 +187,54 @@ class RecipeListWidget extends StatelessWidget {
             color: const Color.fromARGB(255, 255, 254, 234),
             elevation: 8,
             child: ListTile(
-              leading: ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: Image.file(
-                  File(recipe.imageUrls.isNotEmpty
-                      ? recipe.imageUrls[0]
-                      : ''), // Assuming imageUrls is a list of file paths
-                  fit: BoxFit.cover,
-                  width: 60, // Set width according to your design
-                  height: 60, // Set height according to your design
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: Image.file(
+                    File(
+                        recipe.imageUrls.isNotEmpty ? recipe.imageUrls[0] : ''),
+                    fit: BoxFit.cover,
+                    width: 60,
+                    height: 60,
+                  ),
                 ),
-              ),
-              title: Text(recipe.name),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.favorite),
-                  ),
-                  PopupMenuButton<String>(
-                    onSelected: (value) {},
-                    itemBuilder: (BuildContext context) => [
-                      const PopupMenuItem<String>(
-                        value: 'share',
-                        child: Text('Share'),
-                      ),
-                      const PopupMenuItem<String>(
-                        value: 'edit',
-                        child: Text('Edit'),
-                      ),
-                      const PopupMenuItem<String>(
-                        value: 'delete',
-                        child: Text('Delete'),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              subtitle:
-                  Text('Cook time: ${recipe.cookTime}${recipe.selectedUnit}'),
-            ),
+                title: Text(recipe.name),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.favorite),
+                    ),
+                    PopupMenuButton<String>(
+                      onSelected: (value) {
+                        if (value == 'delete') {
+                          setState(() {
+                            deleteRecipe(recipe.id);
+                            deleteIngredient(recipe.id);
+                            deleteStep(recipe.id);
+                          });
+                        }
+                      },
+                      itemBuilder: (BuildContext context) => [
+                        const PopupMenuItem<String>(
+                          value: 'share',
+                          child: Text('Share'),
+                        ),
+                        const PopupMenuItem<String>(
+                          value: 'edit',
+                          child: Text('Edit'),
+                        ),
+                        const PopupMenuItem<String>(
+                          value: 'delete',
+                          child: Text('Delete'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                subtitle: Text(
+                  'Cook time: ${recipe.cookTime} ${recipe.selectedUnit ?? ''}',
+                )),
           ),
         );
       },

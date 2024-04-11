@@ -14,10 +14,10 @@ class DynamicStepField extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<DynamicStepField> createState() => _DynamicStepFieldState();
+  State<DynamicStepField> createState() => DynamicStepFieldState();
 }
 
-class _DynamicStepFieldState extends State<DynamicStepField> {
+class DynamicStepFieldState extends State<DynamicStepField> {
   late List<TextEditingController> controllers;
 
   @override
@@ -28,8 +28,7 @@ class _DynamicStepFieldState extends State<DynamicStepField> {
         .toList();
 
     if (controllers.isEmpty) {
-      controllers
-          .add(TextEditingController()); // Add an initial empty step field
+      controllers.add(TextEditingController());
     }
   }
 
@@ -61,6 +60,10 @@ class _DynamicStepFieldState extends State<DynamicStepField> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a step';
@@ -69,23 +72,22 @@ class _DynamicStepFieldState extends State<DynamicStepField> {
                       },
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.remove_circle),
-                    onPressed: controllers.length > 1
-                        ? () {
-                            setState(() {
-                              controllers.removeAt(index);
-                              _updateSteps();
-                            });
-                          }
-                        : null,
-                  ),
+                  if (controllers.length > 1)
+                    IconButton(
+                      icon: const Icon(Icons.remove_circle),
+                      onPressed: () {
+                        setState(() {
+                          controllers.removeAt(index);
+                          _updateSteps();
+                        });
+                      },
+                    ),
                 ],
               ),
             );
           },
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 1),
         IconButton(
           icon: const Icon(Icons.add_circle),
           onPressed: _addField,

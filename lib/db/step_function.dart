@@ -13,16 +13,29 @@ void addStep(RecipeSteps value) async {
   value.id = _id;
   print('added step id: $_id');
   print('adding step:$value');
-  stepListNotifier.value =
-      stepsBox.values.toList(); // Update notifier with new values
-  stepListNotifier.notifyListeners(); // Notify listeners
+  stepListNotifier.value = stepsBox.values.toList();
+  stepListNotifier.notifyListeners();
 }
 
 Future<List<RecipeSteps>> getSteps() async {
   final stepsBox = await Hive.openBox<RecipeSteps>('Step_db');
 
-  // Retrieve all the ingredients from the box
   final List<RecipeSteps> steps = stepsBox.values.toList();
 
   return steps;
+}
+
+void deleteStep(int? id) async {
+  if (id == null) {
+    print('stepId cannot be null');
+  }
+  final stepsBox = await Hive.openBox<RecipeSteps>('Step_db');
+  if (stepsBox.containsKey(id)) {
+    await stepsBox.delete(id);
+    stepListNotifier.value = stepsBox.values.toList();
+    stepListNotifier.notifyListeners();
+    print('Deleted recipe with ID: $id');
+  } else {
+    print('Recipe with ID $id does not exist');
+  }
 }

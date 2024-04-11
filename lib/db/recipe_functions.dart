@@ -23,3 +23,19 @@ Future<List<RecipeDetails>> getRecipes() async {
 
   return recipes;
 }
+
+void deleteRecipe(int? id) async {
+  if (id == null) {
+    print('Recipe ID cannot be null');
+    return;
+  }
+  final recipesBox = await Hive.openBox<RecipeDetails>('Recipe_db');
+  if (recipesBox.containsKey(id)) {
+    await recipesBox.delete(id);
+    recipeListNotifier.value = recipesBox.values.toList();
+    recipeListNotifier.notifyListeners();
+    print('Deleted recipe with ID: $id');
+  } else {
+    print('Recipe with ID $id does not exist');
+  }
+}

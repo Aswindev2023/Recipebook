@@ -4,7 +4,7 @@ part 'recipe_categorymodel.g.dart';
 @HiveType(typeId: 2)
 class CategoryModel {
   @HiveField(0)
-  int? id;
+  int? id = 0;
 
   @HiveField(1)
   final String categoryName;
@@ -12,5 +12,8 @@ class CategoryModel {
   @HiveField(2)
   final String image;
 
-  CategoryModel({required this.categoryName, required this.image, this.id});
+  CategoryModel({
+    required this.categoryName,
+    required this.image,
+  });
 }
