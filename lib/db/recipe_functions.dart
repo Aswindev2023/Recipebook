@@ -18,9 +18,10 @@ void addRecipe(RecipeDetails value) async {
 }
 
 Future<List<RecipeDetails>> getRecipes() async {
+  print('getRecipe');
   final recipesBox = await Hive.openBox<RecipeDetails>('Recipe_db');
   final List<RecipeDetails> recipes = recipesBox.values.toList();
-
+  recipeListNotifier.notifyListeners();
   return recipes;
 }
 
@@ -34,6 +35,7 @@ void deleteRecipe(int? id) async {
     await recipesBox.delete(id);
     recipeListNotifier.value = recipesBox.values.toList();
     recipeListNotifier.notifyListeners();
+    getRecipes();
     print('Deleted recipe with ID: $id');
   } else {
     print('Recipe with ID $id does not exist');

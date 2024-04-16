@@ -31,8 +31,8 @@ class _ImagePickerAndDisplayState extends State<ImagePickerAndDisplay> {
         const SizedBox(height: 20),
         _imageUrls.isEmpty
             ? const Text('No images selected')
-            : Container(
-                height: 200, // Set a fixed height for the container
+            : SizedBox(
+                height: 200,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: _imageUrls.length,

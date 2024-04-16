@@ -94,7 +94,10 @@ class _AddCategoryState extends State<AddCategory> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                   ),
-                  child: const Text('Clear'),
+                  child: const Text(
+                    'Clear',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -103,7 +106,10 @@ class _AddCategoryState extends State<AddCategory> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                   ),
-                  child: const Text('Save'),
+                  child: const Text(
+                    'Save',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             ),

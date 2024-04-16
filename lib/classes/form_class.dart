@@ -5,7 +5,7 @@ import 'package:recipe_book/classes/category_menu.dart';
 import 'package:recipe_book/classes/dynamicIngredients.dart';
 import 'package:recipe_book/classes/dynamicSteps.dart';
 import 'package:recipe_book/classes/image_picker.dart';
-import 'package:recipe_book/model/recipeform_model.dart'; // Assuming recipeform_model.dart defines RecipeForm
+import 'package:recipe_book/model/recipeform_model.dart';
 
 class RecipeFormFields {
   final TextEditingController nameController;
@@ -51,7 +51,6 @@ class RecipeFormFields {
     _selectedCategory = category;
   }
 
-  // Create a method to get the complete RecipeForm data
   RecipeForm getRecipeForm() {
     return RecipeForm(
       name: nameController.text,
@@ -102,9 +101,10 @@ Widget buildImagePickerAndDisplay(RecipeFormFields recipeFormFields) {
 Widget buildStepField(RecipeFormFields recipeFormFields) {
   return DynamicStepField(
     initialFields: recipeFormFields._steps,
-    fieldName: 'Steps', // You can customize the field name as needed
+    fieldName: 'Steps',
     onStepsChanged: (List<String> steps) {
-      recipeFormFields._steps = steps;
+      recipeFormFields.setSteps(steps);
+      print('steps count:$steps');
     },
   );
 }
@@ -112,9 +112,9 @@ Widget buildStepField(RecipeFormFields recipeFormFields) {
 Widget buildIngredientField(RecipeFormFields recipeFormFields) {
   return DynamicIngredientField(
     initialIngredients: recipeFormFields._ingredients,
-    fieldName: 'Ingredients', // You can customize the field name as needed
+    fieldName: 'Ingredients',
     onIngredientsChanged: (List<String> ingredients) {
-      recipeFormFields.setIngredients(ingredients); // Update ingredients list
+      recipeFormFields.setIngredients(ingredients);
     },
   );
 }
@@ -174,8 +174,7 @@ class DescriptionField extends StatelessWidget {
 }
 
 class CookTimeField extends StatefulWidget {
-  final Function(String)
-      onCookTimeChanged; // Callback for user-entered cook time
+  final Function(String) onCookTimeChanged;
   final String? Function(String?) validator;
   final Function(String) onUnitChanged;
   const CookTimeField({
@@ -191,7 +190,7 @@ class CookTimeField extends StatefulWidget {
 
 class _CookTimeFieldState extends State<CookTimeField> {
   String cookTime = '';
-  String _selectedUnit = 'Minutes'; // Default unit
+  String _selectedUnit = 'Minutes';
 
   void setCookTime(String value) {
     setState(() {
@@ -202,13 +201,13 @@ class _CookTimeFieldState extends State<CookTimeField> {
 
   void setUnit(String? unit) {
     if (unit != null) {
-      print('Unit received: $unit'); // Add this line for debugging
+      print('Unit received: $unit');
       setState(() {
         _selectedUnit = unit;
       });
       widget.onUnitChanged(_selectedUnit);
     } else {
-      print('Received null unit'); // Add this line for debugging
+      print('Received null unit');
     }
   }
 

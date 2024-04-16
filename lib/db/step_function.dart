@@ -9,18 +9,21 @@ ValueNotifier<List<RecipeSteps>> stepListNotifier = ValueNotifier([]);
 void addStep(RecipeSteps value) async {
   print('adding steps:$value');
   final stepsBox = await Hive.openBox<RecipeSteps>('Step_db');
-  final _id = await stepsBox.add(value);
-  value.id = _id;
-  print('added step id: $_id');
-  print('adding step:$value');
+  final id = await stepsBox.add(value);
+  value.id = id;
+
+  print('added step id: $id');
+  print('added step:$value');
   stepListNotifier.value = stepsBox.values.toList();
   stepListNotifier.notifyListeners();
 }
 
 Future<List<RecipeSteps>> getSteps() async {
+  print('getSteps');
   final stepsBox = await Hive.openBox<RecipeSteps>('Step_db');
-
   final List<RecipeSteps> steps = stepsBox.values.toList();
+  stepListNotifier.notifyListeners();
+  print('getRecipe:$steps');
 
   return steps;
 }
@@ -34,8 +37,8 @@ void deleteStep(int? id) async {
     await stepsBox.delete(id);
     stepListNotifier.value = stepsBox.values.toList();
     stepListNotifier.notifyListeners();
-    print('Deleted recipe with ID: $id');
+    print('Deleted step  with ID: $id');
   } else {
-    print('Recipe with ID $id does not exist');
+    print('step with ID $id does not exist');
   }
 }

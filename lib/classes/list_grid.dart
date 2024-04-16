@@ -5,15 +5,18 @@ import 'package:recipe_book/db/ingredients_function.dart';
 import 'package:recipe_book/db/recipe_functions.dart';
 import 'package:recipe_book/db/step_function.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
+import 'package:recipe_book/pages/detailedview_page.dart';
 
 class RecipeListWidget extends StatefulWidget {
   final bool isGridView;
   final List<RecipeDetails> recipes;
+  final Future<void> Function() fetchRecipes;
 
   const RecipeListWidget({
     Key? key,
     required this.isGridView,
     required this.recipes,
+    required this.fetchRecipes,
   }) : super(key: key);
 
   @override
@@ -51,8 +54,9 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const Placeholder(),
-                // builder: (context) => ViewRecipe(recipe: recipe),
+                builder: (context) => DetailedPage(
+                  recipe: recipe,
+                ),
               ),
             );
           },
@@ -100,13 +104,11 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                               deleteRecipe(recipe.id);
                               deleteIngredient(recipe.id);
                               deleteStep(recipe.id);
+                              widget.fetchRecipes();
                             });
                           }
                         },
                         itemBuilder: (BuildContext context) => [
-                          const PopupMenuItem(
-                            child: Text("Share"),
-                          ),
                           const PopupMenuItem(
                             child: Text("Edit"),
                           ),
@@ -178,9 +180,8 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      const Placeholder() //ViewRecipe(recipe: recipe),
-                  ),
+                builder: (context) => DetailedPage(recipe: recipe),
+              ),
             );
           },
           child: Card(
@@ -212,14 +213,11 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                             deleteRecipe(recipe.id);
                             deleteIngredient(recipe.id);
                             deleteStep(recipe.id);
+                            widget.fetchRecipes();
                           });
                         }
                       },
                       itemBuilder: (BuildContext context) => [
-                        const PopupMenuItem<String>(
-                          value: 'share',
-                          child: Text('Share'),
-                        ),
                         const PopupMenuItem<String>(
                           value: 'edit',
                           child: Text('Edit'),

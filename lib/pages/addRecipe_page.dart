@@ -146,11 +146,15 @@ class _MyFormPageState extends State<MyFormPage> {
       final ingredients = RecipeIngredients(
         ingredient: recipeFormFields.ingredients,
       );
-      addIngredient(ingredients);
+      addIngredient(
+        ingredients,
+      );
       final steps = RecipeSteps(
         step: recipeFormFields.steps,
       );
+      print('RecipeSteps Id:${recipeFormFields.steps}');
       addStep(steps);
+      print('after addStep fun: $steps');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Recipe Added'),

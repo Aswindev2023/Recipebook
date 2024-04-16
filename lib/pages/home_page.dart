@@ -17,7 +17,8 @@ class _HomepageState extends State<Homepage> {
   bool _isGridView = true;
   final int _selectedIndex = 0;
   List<RecipeDetails> _recipes = [];
-  List<RecipeDetails> _filteredRecipes = []; // Newly added
+
+  List<RecipeDetails> _filteredRecipes = [];
   String _searchQuery = '';
   @override
   void initState() {
@@ -27,6 +28,7 @@ class _HomepageState extends State<Homepage> {
 
   Future<void> _fetchRecipes() async {
     final List<RecipeDetails> recipes = await getRecipes();
+
     setState(() {
       _recipes = recipes;
       _filteredRecipes = List.from(recipes);
@@ -129,11 +131,13 @@ class _HomepageState extends State<Homepage> {
                       isGridView: _isGridView,
                       recipes:
                           _searchQuery.isEmpty ? _recipes : _filteredRecipes,
+                      fetchRecipes: _fetchRecipes,
                     )
                   : RecipeListWidget(
                       isGridView: false,
                       recipes:
                           _searchQuery.isEmpty ? _recipes : _filteredRecipes,
+                      fetchRecipes: _fetchRecipes,
                     ),
             ),
           ],
@@ -169,12 +173,14 @@ class _HomepageState extends State<Homepage> {
                 title: const Text('Time(Lowest to Highest)'),
                 onTap: () {
                   Navigator.pop(context);
+                  _sortRecipes(true);
                 },
               ),
               ListTile(
                 title: const Text('Time(Highest to Lowest)'),
                 onTap: () {
                   Navigator.pop(context);
+                  _sortRecipes(false);
                 },
               ),
             ],
@@ -182,5 +188,17 @@ class _HomepageState extends State<Homepage> {
         );
       },
     );
+  }
+
+  void _sortRecipes(bool ascending) {
+    List<RecipeDetails> sortedRecipes = List.from(_recipes);
+    setState(() {
+      if (ascending) {
+        sortedRecipes.sort((a, b) => a.cookTime.compareTo(b.cookTime));
+      } else {
+        sortedRecipes.sort((a, b) => b.cookTime.compareTo(a.cookTime));
+      }
+      _recipes = sortedRecipes;
+    });
   }
 }

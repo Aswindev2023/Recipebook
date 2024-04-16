@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 class DynamicStepField extends StatefulWidget {
   final List<String> initialFields;
   final String fieldName;
-  final Function(List<String>)
-      onStepsChanged; // Callback for user-entered steps
+  final Function(List<String>) onStepsChanged;
 
   const DynamicStepField({
     Key? key,
@@ -14,17 +13,17 @@ class DynamicStepField extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<DynamicStepField> createState() => DynamicStepFieldState();
+  State<DynamicStepField> createState() => _DynamicStepFieldState();
 }
 
-class DynamicStepFieldState extends State<DynamicStepField> {
+class _DynamicStepFieldState extends State<DynamicStepField> {
   late List<TextEditingController> controllers;
 
   @override
   void initState() {
     super.initState();
     controllers = widget.initialFields
-        .map((field) => TextEditingController(text: field))
+        .map((step) => TextEditingController(text: step))
         .toList();
 
     if (controllers.isEmpty) {
@@ -60,6 +59,9 @@ class DynamicStepFieldState extends State<DynamicStepField> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
+                      onChanged: (_) {
+                        _notifyParent();
+                      },
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
@@ -75,12 +77,14 @@ class DynamicStepFieldState extends State<DynamicStepField> {
                   if (controllers.length > 1)
                     IconButton(
                       icon: const Icon(Icons.remove_circle),
-                      onPressed: () {
-                        setState(() {
-                          controllers.removeAt(index);
-                          _updateSteps();
-                        });
-                      },
+                      onPressed: controllers.length > 1
+                          ? () {
+                              setState(() {
+                                controllers.removeAt(index);
+                                _notifyParent();
+                              });
+                            }
+                          : null,
                     ),
                 ],
               ),
@@ -99,18 +103,26 @@ class DynamicStepFieldState extends State<DynamicStepField> {
   void _addField() {
     setState(() {
       controllers.add(TextEditingController());
+      _notifyParent();
     });
   }
 
-  void _updateSteps() {
+  void _notifyParent() {
+    final steps = controllers.map((controller) => controller.text).toList();
+    widget.onStepsChanged(steps);
+  }
+
+  /*void _updateSteps() {
     List<String> steps =
         controllers.map((controller) => controller.text).toList();
-    widget.onStepsChanged(steps); // Call the callback to update the steps
-  }
+    widget.onStepsChanged(steps);
+  }*/
 
   @override
   void dispose() {
-    controllers.forEach((controller) => controller.dispose());
+    for (var controller in controllers) {
+      controller.dispose();
+    }
     super.dispose();
   }
 }

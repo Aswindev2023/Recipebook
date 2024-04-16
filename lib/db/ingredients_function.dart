@@ -15,14 +15,15 @@ void addIngredient(RecipeIngredients value) async {
   value.id = _id;
   print('added id ingredient: $_id');
   print('added ingredients:$value');
-  ingredientListNotifier.value =
-      ingredientsBox.values.toList(); // Update notifier with new values
-  ingredientListNotifier.notifyListeners(); // Notify listeners
+  ingredientListNotifier.value = ingredientsBox.values.toList();
+  ingredientListNotifier.notifyListeners();
 }
 
 Future<List<RecipeIngredients>> getIngredients() async {
+  print('getIngredients');
   final ingredientsBox = await Hive.openBox<RecipeIngredients>('Ingredient_db');
   final List<RecipeIngredients> ingredients = ingredientsBox.values.toList();
+  ingredientListNotifier.notifyListeners();
 
   return ingredients;
 }

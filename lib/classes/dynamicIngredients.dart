@@ -27,8 +27,7 @@ class _DynamicIngredientFieldState extends State<DynamicIngredientField> {
         .toList();
 
     if (controllers.isEmpty) {
-      controllers.add(
-          TextEditingController()); // Add an initial empty ingredient field
+      controllers.add(TextEditingController());
     }
   }
 
@@ -60,7 +59,6 @@ class _DynamicIngredientFieldState extends State<DynamicIngredientField> {
                             borderRadius: BorderRadius.circular(8)),
                       ),
                       onChanged: (_) {
-                        // Notify parent about ingredient changes
                         _notifyParent();
                       },
                       validator: (value) {
@@ -110,16 +108,17 @@ class _DynamicIngredientFieldState extends State<DynamicIngredientField> {
   }
 
   void _notifyParent() {
-    // Extract ingredient values from controllers
     final ingredients =
         controllers.map((controller) => controller.text).toList();
-    // Call the callback function provided by the parent
+
     widget.onIngredientsChanged(ingredients);
   }
 
   @override
   void dispose() {
-    controllers.forEach((controller) => controller.dispose());
+    for (var controller in controllers) {
+      controller.dispose();
+    }
     super.dispose();
   }
 }
