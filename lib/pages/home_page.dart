@@ -17,7 +17,8 @@ class _HomepageState extends State<Homepage> {
   bool _isGridView = true;
   final int _selectedIndex = 0;
   List<RecipeDetails> _recipes = [];
-
+  // List<RecipeSteps> _steps = [];
+  //List<RecipeIngredients> _ingredients = [];
   List<RecipeDetails> _filteredRecipes = [];
   String _searchQuery = '';
   @override
@@ -28,9 +29,12 @@ class _HomepageState extends State<Homepage> {
 
   Future<void> _fetchRecipes() async {
     final List<RecipeDetails> recipes = await getRecipes();
-
+    //final List<RecipeSteps> steps = await getSteps();
+    //final List<RecipeIngredients> ingredients = await getIngredients();
     setState(() {
       _recipes = recipes;
+      //_steps = steps;
+      //_ingredients = ingredients;
       _filteredRecipes = List.from(recipes);
     });
   }

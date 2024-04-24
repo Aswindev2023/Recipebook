@@ -17,32 +17,35 @@ class RecipeDetailsAdapter extends TypeAdapter<RecipeDetails> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return RecipeDetails(
-      name: fields[1] as String,
-      description: fields[2] as String,
-      cookTime: fields[3] as String,
-      selectedCategory: fields[4] as String,
-      imageUrls: (fields[5] as List).cast<String>(),
-      selectedUnit: fields[6] as String?,
+      recipeId: fields[1] as int,
+      name: fields[2] as String,
+      description: fields[3] as String,
+      cookTime: fields[4] as String,
+      selectedCategory: fields[5] as String,
+      imageUrls: (fields[6] as List).cast<String>(),
+      selectedUnit: fields[7] as String?,
     )..id = fields[0] as int;
   }
 
   @override
   void write(BinaryWriter writer, RecipeDetails obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.name)
+      ..write(obj.recipeId)
       ..writeByte(2)
-      ..write(obj.description)
+      ..write(obj.name)
       ..writeByte(3)
-      ..write(obj.cookTime)
+      ..write(obj.description)
       ..writeByte(4)
-      ..write(obj.selectedCategory)
+      ..write(obj.cookTime)
       ..writeByte(5)
-      ..write(obj.imageUrls)
+      ..write(obj.selectedCategory)
       ..writeByte(6)
+      ..write(obj.imageUrls)
+      ..writeByte(7)
       ..write(obj.selectedUnit);
   }
 

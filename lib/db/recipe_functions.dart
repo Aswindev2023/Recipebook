@@ -6,10 +6,13 @@ import 'package:recipe_book/model/recipebook_model.dart';
 
 ValueNotifier<List<RecipeDetails>> recipeListNotifier = ValueNotifier([]);
 
-void addRecipe(RecipeDetails value) async {
+void addRecipe(RecipeDetails value, int recipeId) async {
   print('adding recipe: $value');
+  print('addRecipe recipeId passed from addRecipepage:$recipeId');
   final recipesBox = await Hive.openBox<RecipeDetails>('Recipe_db');
   final id = await recipesBox.add(value);
+  value.recipeId = recipeId;
+  print('addRecipe functions:${value.id}');
   value.id = id;
   print('recipe id:$id');
   print('added value: $value');

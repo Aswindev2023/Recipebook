@@ -18,17 +18,21 @@ class RecipeIngredientsAdapter extends TypeAdapter<RecipeIngredients> {
     };
     return RecipeIngredients(
       ingredient: (fields[1] as List).cast<String>(),
-    )..id = fields[0] as int;
+    )
+      ..id = fields[0] as int
+      ..recipeId = fields[2] as int;
   }
 
   @override
   void write(BinaryWriter writer, RecipeIngredients obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.ingredient);
+      ..write(obj.ingredient)
+      ..writeByte(2)
+      ..write(obj.recipeId);
   }
 
   @override

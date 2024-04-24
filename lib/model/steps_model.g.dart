@@ -18,17 +18,21 @@ class RecipeStepsAdapter extends TypeAdapter<RecipeSteps> {
     };
     return RecipeSteps(
       step: (fields[1] as List).cast<String>(),
-    )..id = fields[0] as int;
+    )
+      ..id = fields[0] as int
+      ..recipeId = fields[2] as int;
   }
 
   @override
   void write(BinaryWriter writer, RecipeSteps obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.step);
+      ..write(obj.step)
+      ..writeByte(2)
+      ..write(obj.recipeId);
   }
 
   @override

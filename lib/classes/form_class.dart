@@ -51,6 +51,10 @@ class RecipeFormFields {
     _selectedCategory = category;
   }
 
+  void setImageUrls(List<String> urls) {
+    _imageUrls = urls;
+  }
+
   RecipeForm getRecipeForm() {
     return RecipeForm(
       name: nameController.text,

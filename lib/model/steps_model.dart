@@ -9,6 +9,9 @@ class RecipeSteps {
   @HiveField(1)
   List<String> step;
 
+  @HiveField(2)
+  int recipeId = 0;
+
   RecipeSteps({
     required this.step,
   });

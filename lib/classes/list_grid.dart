@@ -4,19 +4,26 @@ import 'package:flutter/material.dart';
 import 'package:recipe_book/db/ingredients_function.dart';
 import 'package:recipe_book/db/recipe_functions.dart';
 import 'package:recipe_book/db/step_function.dart';
+//import 'package:recipe_book/model/Ingredients_model.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
+//import 'package:recipe_book/model/steps_model.dart';
 import 'package:recipe_book/pages/detailedview_page.dart';
+//import 'package:recipe_book/pages/editRecipe_page.dart';
 
 class RecipeListWidget extends StatefulWidget {
   final bool isGridView;
   final List<RecipeDetails> recipes;
   final Future<void> Function() fetchRecipes;
+  // final List<RecipeSteps> step;
+  //final List<RecipeIngredients> ingredient;
 
   const RecipeListWidget({
     Key? key,
     required this.isGridView,
     required this.recipes,
     required this.fetchRecipes,
+    //required this.ingredient,
+    // required this.step,
   }) : super(key: key);
 
   @override
@@ -27,11 +34,21 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
   @override
   Widget build(BuildContext context) {
     return widget.isGridView
-        ? _buildGridView(widget.recipes)
-        : _buildListView(widget.recipes);
+        ? _buildGridView(widget.recipes
+            // widget.step,
+            //widget.ingredient,
+            )
+        : _buildListView(widget.recipes
+            //widget.step,
+            //widget.ingredient,
+            );
   }
 
-  Widget _buildGridView(List<RecipeDetails> recipes) {
+  Widget _buildGridView(
+    List<RecipeDetails> recipes,
+    //List<RecipeSteps> step,
+    //List<RecipeIngredients> ingredient,
+  ) {
     if (recipes.isEmpty) {
       return const Center(
         child: Text(
@@ -94,9 +111,42 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                         ),
                       ),
                     ),
+                    Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Stack(
+                          children: [
+                            ShaderMask(
+                              shaderCallback: (Rect bounds) {
+                                return LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    const Color.fromARGB(255, 94, 93, 93)
+                                        .withOpacity(0.4),
+                                    const Color.fromARGB(0, 75, 75, 75)
+                                        .withOpacity(0.3),
+                                  ],
+                                ).createShader(bounds);
+                              },
+                              blendMode: BlendMode.overlay,
+                              child: Text(
+                                recipe.name,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     Positioned(
-                      bottom: 2,
-                      right: 5,
+                      bottom: 0,
+                      right: 0,
                       child: PopupMenuButton(
                         onSelected: (value) {
                           if (value == 'delete') {
@@ -107,9 +157,18 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                               widget.fetchRecipes();
                             });
                           }
+                          if (value == 'edit') {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Placeholder(),
+                              ),
+                            );
+                          }
                         },
                         itemBuilder: (BuildContext context) => [
                           const PopupMenuItem(
+                            value: 'edit',
                             child: Text("Edit"),
                           ),
                           const PopupMenuItem(
@@ -123,35 +182,6 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                         ),
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.bottomLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ShaderMask(
-                          shaderCallback: (Rect bounds) {
-                            return LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                const Color.fromARGB(255, 94, 93, 93)
-                                    .withOpacity(0.4),
-                                const Color.fromARGB(0, 75, 75, 75)
-                                    .withOpacity(0.3),
-                              ],
-                            ).createShader(bounds);
-                          },
-                          blendMode: BlendMode.overlay,
-                          child: Text(
-                            recipe.name,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 23,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -162,7 +192,11 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
     );
   }
 
-  Widget _buildListView(List<RecipeDetails> recipes) {
+  Widget _buildListView(
+    List<RecipeDetails> recipes,
+    //List<RecipeSteps> step,
+    //List<RecipeIngredients> ingredient,
+  ) {
     if (recipes.isEmpty) {
       return const Center(
         child: Text(
@@ -215,6 +249,13 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                             deleteStep(recipe.id);
                             widget.fetchRecipes();
                           });
+                        }
+                        if (value == 'edit') {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Placeholder(),
+                              ));
                         }
                       },
                       itemBuilder: (BuildContext context) => [

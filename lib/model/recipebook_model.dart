@@ -8,24 +8,28 @@ class RecipeDetails {
   int id = 0;
 
   @HiveField(1)
-  final String name;
+  int recipeId = 0;
 
   @HiveField(2)
-  final String description;
+  final String name;
 
   @HiveField(3)
-  final String cookTime;
+  final String description;
 
   @HiveField(4)
-  final String selectedCategory;
+  final String cookTime;
 
   @HiveField(5)
-  final List<String> imageUrls;
+  final String selectedCategory;
 
   @HiveField(6)
+  final List<String> imageUrls;
+
+  @HiveField(7)
   final String? selectedUnit;
 
   RecipeDetails({
+    required this.recipeId,
     required this.name,
     required this.description,
     required this.cookTime,

@@ -9,6 +9,9 @@ class RecipeIngredients {
   @HiveField(1)
   List<String> ingredient;
 
+  @HiveField(2)
+  int recipeId = 0;
+
   RecipeIngredients({
     required this.ingredient,
   });

@@ -6,6 +6,7 @@ import 'package:recipe_book/model/Ingredients_model.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
 import 'package:recipe_book/model/steps_model.dart';
 import 'package:recipe_book/pages/ingredientlist_page.dart';
+import 'package:recipe_book/pages/stepbystep_page.dart';
 
 class DetailedPage extends StatefulWidget {
   final RecipeDetails recipe;
@@ -20,22 +21,6 @@ class _DetailedPageState extends State<DetailedPage> {
   late List<RecipeSteps> _steps = [];
   late List<RecipeIngredients> _ingredients = [];
 
-  Future<List<RecipeIngredients>> getIngredientsByRecipeId(int recipeId) async {
-    final List<RecipeIngredients> allIngredients = await getIngredients();
-    final List<RecipeIngredients> ingredientsByRecipeId = allIngredients
-        .where((ingredient) => ingredient.id == recipeId)
-        .toList();
-    return ingredientsByRecipeId;
-  }
-
-  Future<List<RecipeSteps>> getStepsByRecipeId(int recipeId) async {
-    final List<RecipeSteps> allSteps = await getSteps();
-    final List<RecipeSteps> stepsByRecipeId =
-        allSteps.where((step) => step.id == recipeId).toList();
-    print('getStepsByRecipeId: $stepsByRecipeId');
-    return stepsByRecipeId;
-  }
-
   @override
   void initState() {
     super.initState();
@@ -44,18 +29,22 @@ class _DetailedPageState extends State<DetailedPage> {
   }
 
   void _fetchSteps() async {
-    List<RecipeSteps> steps = await getStepsByRecipeId(widget.recipe.id);
+    List<RecipeSteps> steps = await getSteps(widget.recipe.recipeId);
     setState(() {
       _steps = steps;
     });
+    print('_fetchstep recipeId:${widget.recipe.recipeId}');
+    print('fetchstep:$_steps');
   }
 
   void _fetchIngredients() async {
     List<RecipeIngredients> ingredients =
-        await getIngredientsByRecipeId(widget.recipe.id);
+        await getIngredients(widget.recipe.recipeId);
     setState(() {
       _ingredients = ingredients;
     });
+    print('_fetchingredient recipeId:${widget.recipe.recipeId}');
+    print('fetch ingredients: $_ingredients');
   }
 
   @override
@@ -113,7 +102,7 @@ class _DetailedPageState extends State<DetailedPage> {
                     fontSize: 24.0, fontWeight: FontWeight.w400),
               ),
             ),
-            const SizedBox(height: 14.0),
+            const SizedBox(height: 1.0),
             Padding(
               padding: const EdgeInsets.only(left: 10),
               child: Row(
@@ -198,7 +187,16 @@ class _DetailedPageState extends State<DetailedPage> {
                   style: const ButtonStyle(
                       backgroundColor: MaterialStatePropertyAll(
                           Color.fromARGB(255, 54, 255, 9))),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Stepbystep(
+                            steps: _steps,
+                            recipe: widget.recipe,
+                          ),
+                        ));
+                  },
                   child: const Text(
                     'Start Cooking',
                     style: TextStyle(
