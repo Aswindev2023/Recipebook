@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_book/classes/bottomnavigationbar.dart';
-import 'package:recipe_book/classes/list_grid.dart';
-import 'package:recipe_book/db/recipe_functions.dart';
+import 'package:recipe_book/classes/favourite_layout.dart';
+
+import 'package:recipe_book/db/favourite_functions.dart';
+
 import 'package:recipe_book/model/recipebook_model.dart';
 
-class Homepage extends StatefulWidget {
-  const Homepage({
+class FavouritePage extends StatefulWidget {
+  const FavouritePage({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<Homepage> createState() => _HomepageState();
+  State<FavouritePage> createState() => _FavouritePageState();
 }
 
-class _HomepageState extends State<Homepage> {
+class _FavouritePageState extends State<FavouritePage> {
   bool _isGridView = true;
-  final int _selectedIndex = 0;
+  final int _selectedIndex = 2;
   List<RecipeDetails> _recipes = [];
 
-  List<RecipeDetails> _filteredRecipes = [];
-  String _searchQuery = '';
   @override
   void initState() {
     super.initState();
@@ -27,26 +27,11 @@ class _HomepageState extends State<Homepage> {
   }
 
   Future<void> _fetchRecipes() async {
-    final List<RecipeDetails> recipes = await getRecipes();
+    print('fetch favourites');
+    final List<RecipeDetails> recipes = await getFavouriteRecipes();
 
     setState(() {
       _recipes = recipes;
-
-      _filteredRecipes = List.from(recipes);
-    });
-  }
-
-  void _filterRecipes(String query) {
-    setState(() {
-      _searchQuery = query;
-      if (query.isNotEmpty) {
-        _filteredRecipes = _recipes
-            .where((recipe) =>
-                recipe.name.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-      } else {
-        _filteredRecipes = List.from(_recipes);
-      }
     });
   }
 
@@ -63,7 +48,7 @@ class _HomepageState extends State<Homepage> {
           ),
           centerTitle: true,
           title: const Text(
-            'Recipes',
+            'Favourites',
             style: TextStyle(fontSize: 30, fontWeight: FontWeight.w500),
           ),
           actions: [
@@ -93,50 +78,17 @@ class _HomepageState extends State<Homepage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'What is in your mind?',
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              'Let\'s Make Something',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.normal,
-                color: Color.fromARGB(255, 84, 83, 83),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              margin: const EdgeInsets.only(left: 4, right: 5),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.lightBlueAccent, width: 2),
-                color: const Color.fromARGB(255, 236, 234, 234),
-              ),
-              child: TextField(
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.search),
-                  hintText: 'Search...',
-                  hintStyle: TextStyle(fontSize: 15),
-                  border: InputBorder.none,
-                ),
-                onChanged: _filterRecipes,
-              ),
-            ),
             const SizedBox(height: 20),
             Expanded(
               child: _isGridView
-                  ? RecipeListWidget(
+                  ? FavouriteWidget(
                       isGridView: _isGridView,
-                      recipes:
-                          _searchQuery.isEmpty ? _recipes : _filteredRecipes,
+                      recipes: _recipes,
                       fetchRecipes: _fetchRecipes,
                     )
-                  : RecipeListWidget(
+                  : FavouriteWidget(
                       isGridView: false,
-                      recipes:
-                          _searchQuery.isEmpty ? _recipes : _filteredRecipes,
+                      recipes: _recipes,
                       fetchRecipes: _fetchRecipes,
                     ),
             ),

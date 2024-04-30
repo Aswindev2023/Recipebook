@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 part 'recipebook_model.g.dart';
 
 @HiveType(typeId: 0)
-class RecipeDetails {
+class RecipeDetails extends HiveObject {
   @HiveField(0)
   int id = 0;
 

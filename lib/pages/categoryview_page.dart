@@ -1,52 +1,41 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:recipe_book/classes/bottomnavigationbar.dart';
-import 'package:recipe_book/classes/list_grid.dart';
+import 'package:recipe_book/classes/categoryview_layout.dart';
 import 'package:recipe_book/db/recipe_functions.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
 
-class Homepage extends StatefulWidget {
-  const Homepage({
+class CategoryViewpage extends StatefulWidget {
+  final String categoryname;
+  final String image;
+  const CategoryViewpage({
     Key? key,
+    required this.categoryname,
+    required this.image,
   }) : super(key: key);
 
   @override
-  State<Homepage> createState() => _HomepageState();
+  State<CategoryViewpage> createState() => _CategoryViewpageState();
 }
 
-class _HomepageState extends State<Homepage> {
+class _CategoryViewpageState extends State<CategoryViewpage> {
   bool _isGridView = true;
-  final int _selectedIndex = 0;
   List<RecipeDetails> _recipes = [];
 
-  List<RecipeDetails> _filteredRecipes = [];
-  String _searchQuery = '';
   @override
   void initState() {
     super.initState();
-    _fetchRecipes();
+    _fetchRecipes(widget.categoryname);
   }
 
-  Future<void> _fetchRecipes() async {
+  Future<void> _fetchRecipes(String categoryName) async {
     final List<RecipeDetails> recipes = await getRecipes();
+    final filteredRecipes = recipes
+        .where((recipe) => recipe.selectedCategory == categoryName)
+        .toList();
 
     setState(() {
-      _recipes = recipes;
-
-      _filteredRecipes = List.from(recipes);
-    });
-  }
-
-  void _filterRecipes(String query) {
-    setState(() {
-      _searchQuery = query;
-      if (query.isNotEmpty) {
-        _filteredRecipes = _recipes
-            .where((recipe) =>
-                recipe.name.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-      } else {
-        _filteredRecipes = List.from(_recipes);
-      }
+      _recipes = filteredRecipes;
     });
   }
 
@@ -57,10 +46,6 @@ class _HomepageState extends State<Homepage> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(50),
         child: AppBar(
-          leading: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
           centerTitle: true,
           title: const Text(
             'Recipes',
@@ -93,58 +78,32 @@ class _HomepageState extends State<Homepage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'What is in your mind?',
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              'Let\'s Make Something',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.normal,
-                color: Color.fromARGB(255, 84, 83, 83),
-              ),
-            ),
-            const SizedBox(height: 16),
             Container(
-              margin: const EdgeInsets.only(left: 4, right: 5),
+              margin: const EdgeInsets.only(right: 10),
+              width: 400,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.lightBlueAccent, width: 2),
-                color: const Color.fromARGB(255, 236, 234, 234),
-              ),
-              child: TextField(
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.search),
-                  hintText: 'Search...',
-                  hintStyle: TextStyle(fontSize: 15),
-                  border: InputBorder.none,
+                image: DecorationImage(
+                  image: FileImage(File(widget.image)),
+                  fit: BoxFit.cover,
                 ),
-                onChanged: _filterRecipes,
               ),
             ),
             const SizedBox(height: 20),
             Expanded(
               child: _isGridView
-                  ? RecipeListWidget(
+                  ? CategoryWidget(
                       isGridView: _isGridView,
-                      recipes:
-                          _searchQuery.isEmpty ? _recipes : _filteredRecipes,
+                      recipes: _recipes,
                       fetchRecipes: _fetchRecipes,
                     )
-                  : RecipeListWidget(
+                  : CategoryWidget(
                       isGridView: false,
-                      recipes:
-                          _searchQuery.isEmpty ? _recipes : _filteredRecipes,
+                      recipes: _recipes,
                       fetchRecipes: _fetchRecipes,
                     ),
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBarWidget(
-        selectedIndex: _selectedIndex,
       ),
     );
   }

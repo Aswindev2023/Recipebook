@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:recipe_book/model/Ingredients_model.dart';
+import 'package:recipe_book/model/favourite_model.dart';
 import 'package:recipe_book/model/recipe_categorymodel.dart';
 
 import 'package:recipe_book/model/recipebook_model.dart';
@@ -15,11 +16,13 @@ Future<void> main() async {
   if (!Hive.isAdapterRegistered(RecipeDetailsAdapter().typeId) &&
       !Hive.isAdapterRegistered(RecipeStepsAdapter().typeId) &&
       !Hive.isAdapterRegistered(RecipeIngredientsAdapter().typeId) &&
-      !Hive.isAdapterRegistered(CategoryModelAdapter().typeId)) {
+      !Hive.isAdapterRegistered(CategoryModelAdapter().typeId) &&
+      !Hive.isAdapterRegistered(FavouritesAdapter().typeId)) {
     Hive.registerAdapter(RecipeDetailsAdapter());
     Hive.registerAdapter(RecipeStepsAdapter());
     Hive.registerAdapter(RecipeIngredientsAdapter());
     Hive.registerAdapter(CategoryModelAdapter());
+    Hive.registerAdapter(FavouritesAdapter());
   }
 
   runApp(const MyApp());

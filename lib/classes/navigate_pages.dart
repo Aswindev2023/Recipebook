@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_book/pages/addRecipe_page.dart';
 import 'package:recipe_book/pages/category_page.dart';
+import 'package:recipe_book/pages/favourite_page.dart';
 
 import 'package:recipe_book/pages/home_page.dart';
 
@@ -22,7 +23,7 @@ class NavigationService {
   static void navigateToFavoritesPage(BuildContext context) {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const Placeholder()),
+      MaterialPageRoute(builder: (context) => const FavouritePage()),
     );
   }
 

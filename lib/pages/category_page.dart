@@ -5,6 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:recipe_book/classes/bottomnavigationbar.dart';
 import 'package:recipe_book/model/recipe_categorymodel.dart';
 import 'package:recipe_book/pages/addcategory_page.dart';
+import 'package:recipe_book/pages/categoryview_page.dart';
 
 class Category extends StatefulWidget {
   const Category({Key? key}) : super(key: key);
@@ -25,12 +26,10 @@ class _CategoryState extends State<Category> {
   }
 
   Future<void> getCategory() async {
-    print('Fetching categories...');
     final categories = await Hive.openBox<CategoryModel>('Category_db');
     setState(() {
       _categories = categories.values.toList();
     });
-    print('Categories fetched: $_categories');
   }
 
   @override
@@ -104,7 +103,16 @@ class _CategoryState extends State<Category> {
                         color: Colors.black,
                       ),
                     ),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CategoryViewpage(
+                                    categoryname:
+                                        _categories[index].categoryName,
+                                    image: _categories[index].image,
+                                  )));
+                    },
                   ),
                 );
               },

@@ -1,20 +1,18 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:recipe_book/db/favourite_functions.dart';
 import 'package:recipe_book/db/ingredients_function.dart';
 import 'package:recipe_book/db/recipe_functions.dart';
 import 'package:recipe_book/db/step_function.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
 import 'package:recipe_book/pages/detailedview_page.dart';
 
-class RecipeListWidget extends StatefulWidget {
+class FavouriteWidget extends StatefulWidget {
   final bool isGridView;
-
   final List<RecipeDetails> recipes;
   final Future<void> Function() fetchRecipes;
 
-  const RecipeListWidget({
+  const FavouriteWidget({
     Key? key,
     required this.isGridView,
     required this.recipes,
@@ -22,10 +20,10 @@ class RecipeListWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<RecipeListWidget> createState() => _RecipeListWidgetState();
+  State<FavouriteWidget> createState() => _FavouriteWidgetState();
 }
 
-class _RecipeListWidgetState extends State<RecipeListWidget> {
+class _FavouriteWidgetState extends State<FavouriteWidget> {
   @override
   Widget build(BuildContext context) {
     return widget.isGridView
@@ -39,7 +37,7 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
     if (recipes.isEmpty) {
       return const Center(
         child: Text(
-          'No recipes available.',
+          'No Favourites available.',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       );
@@ -130,7 +128,8 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                               deleteRecipe(recipe.id);
                               deleteIngredient(recipe.id);
                               deleteStep(recipe.id);
-                              widget.fetchRecipes();
+
+                              widget.fetchRecipes;
                             });
                           }
                           if (value == 'edit') {
@@ -141,15 +140,8 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                               ),
                             );
                           }
-                          if (value == 'addFavourite') {
-                            addToFavourites(recipe.recipeId);
-                          }
                         },
                         itemBuilder: (BuildContext context) => [
-                          const PopupMenuItem<String>(
-                            value: 'addFavourite',
-                            child: Text('AddFavourite'),
-                          ),
                           const PopupMenuItem(
                             value: 'edit',
                             child: Text("Edit"),
@@ -181,7 +173,7 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
     if (recipes.isEmpty) {
       return const Center(
         child: Text(
-          'No recipes available.',
+          'No Favourites available.',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       );
@@ -224,7 +216,8 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                             deleteRecipe(recipe.id);
                             deleteIngredient(recipe.id);
                             deleteStep(recipe.id);
-                            widget.fetchRecipes();
+
+                            widget.fetchRecipes;
                           });
                         }
                         if (value == 'edit') {
@@ -234,15 +227,8 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                                 builder: (context) => const Placeholder(),
                               ));
                         }
-                        if (value == 'addFavourite') {
-                          addToFavourites(recipe.recipeId);
-                        }
                       },
                       itemBuilder: (BuildContext context) => [
-                        const PopupMenuItem<String>(
-                          value: 'addFavourite',
-                          child: Text('AddFavourite'),
-                        ),
                         const PopupMenuItem<String>(
                           value: 'edit',
                           child: Text('Edit'),

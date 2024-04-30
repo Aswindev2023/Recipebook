@@ -2,7 +2,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 part 'recipe_categorymodel.g.dart';
 
 @HiveType(typeId: 2)
-class CategoryModel {
+class CategoryModel extends HiveObject {
   @HiveField(0)
   int? id = 0;
 

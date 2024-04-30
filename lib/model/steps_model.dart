@@ -2,7 +2,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 part 'steps_model.g.dart';
 
 @HiveType(typeId: 1)
-class RecipeSteps {
+class RecipeSteps extends HiveObject {
   @HiveField(0)
   int id = 0;
 
