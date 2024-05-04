@@ -119,15 +119,22 @@ class _AddCategoryState extends State<AddCategory> {
     );
   }
 
+  int generateUniqueId() {
+    return DateTime.now().millisecondsSinceEpoch;
+  }
+
   void saveCategory() {
+    final int uniqueId = generateUniqueId();
     if (_nameController.text.isNotEmpty && _imageFile != null) {
       String categoryName = _nameController.text;
       CategoryModel category = CategoryModel(
+        categoryId: uniqueId,
         categoryName: categoryName,
         image: _imageFile!.path,
       );
 
-      addCategory(category);
+      addCategory(category, category.categoryId);
+      print('passing $category and ${category.categoryId}');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Category Added'),

@@ -3,7 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:recipe_book/classes/bottomnavigationbar.dart';
+import 'package:recipe_book/db/category_functions.dart';
+import 'package:recipe_book/db/recipe_functions.dart';
 import 'package:recipe_book/model/recipe_categorymodel.dart';
+import 'package:recipe_book/model/recipebook_model.dart';
 import 'package:recipe_book/pages/addcategory_page.dart';
 import 'package:recipe_book/pages/categoryview_page.dart';
 
@@ -26,11 +29,32 @@ class _CategoryState extends State<Category> {
   }
 
   Future<void> getCategory() async {
+    print('getCategory in view page is called');
+    List<CategoryModel> categoriesList = await getCategoryList();
+    print('category list is:$categoriesList');
+    setState(() {
+      _categories = categoriesList;
+    });
+  }
+
+  Future<void> deleteCategories(String name, int categoryId) async {
+    final List<RecipeDetails> recipes = await getRecipes();
+    final updatedRecipes =
+        recipes.any((recipe) => recipe.selectedCategory == name);
+    if (!updatedRecipes) {
+      deleteCategory(categoryId);
+      setState(() {
+        getCategory();
+      });
+    }
+  }
+
+  /* Future<void> getCategory() async {
     final categories = await Hive.openBox<CategoryModel>('Category_db');
     setState(() {
       _categories = categories.values.toList();
     });
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -79,22 +103,32 @@ class _CategoryState extends State<Category> {
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
               itemCount: _categories.length,
               itemBuilder: (context, index) {
+                final CategoryModel categories = _categories[index];
                 return Card(
                   elevation: 4,
                   child: ListTile(
-                    title: Text(_categories[index].categoryName),
+                    title: Text(categories.categoryName),
                     leading: CircleAvatar(
-                      backgroundImage: _categories[index].image.isNotEmpty
-                          ? FileImage(File(_categories[index].image))
+                      backgroundImage: categories.image.isNotEmpty
+                          ? FileImage(File(categories.image))
                           : const AssetImage('assets/placeholder_image.png')
                               as ImageProvider,
                     ),
                     trailing: PopupMenuButton(
+                      onSelected: (value) async {
+                        if (value == 'delete') {
+                          await deleteCategories(
+                              categories.categoryName, categories.id);
+                          setState(() {});
+                        }
+                      },
                       itemBuilder: (BuildContext context) => [
                         const PopupMenuItem(
+                          value: 'edit',
                           child: Text("Edit"),
                         ),
                         const PopupMenuItem(
+                          value: 'delete',
                           child: Text("Delete"),
                         ),
                       ],
@@ -108,9 +142,8 @@ class _CategoryState extends State<Category> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => CategoryViewpage(
-                                    categoryname:
-                                        _categories[index].categoryName,
-                                    image: _categories[index].image,
+                                    categoryname: categories.categoryName,
+                                    image: categories.image,
                                   )));
                     },
                   ),
