@@ -33,7 +33,7 @@ class _EditFormPageState extends State<EditFormPage> {
     recipeFormFields.descriptionController.text = widget.recipe.description;
     recipeFormFields.setCookTime(widget.recipe.cookTime);
     recipeFormFields.setSelectedCategory(widget.recipe.selectedCategory);
-    recipeFormFields.setImageUrls(List.from(widget.recipe.imageUrls));
+    recipeFormFields.setImages(List.from(widget.recipe.imageByteList));
     recipeFormFields.setUnit(widget.recipe.selectedUnit ?? 'Minutes');
     // Set initial values for ingredients and steps
     recipeFormFields.setIngredients(List.from(widget.ingredients));

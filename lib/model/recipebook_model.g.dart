@@ -22,7 +22,7 @@ class RecipeDetailsAdapter extends TypeAdapter<RecipeDetails> {
       description: fields[3] as String,
       cookTime: fields[4] as String,
       selectedCategory: fields[5] as String,
-      imageUrls: (fields[6] as List).cast<String>(),
+      imageByteList: (fields[6] as List).cast<Uint8List>(),
       selectedUnit: fields[7] as String?,
     )..id = fields[0] as int;
   }
@@ -44,7 +44,7 @@ class RecipeDetailsAdapter extends TypeAdapter<RecipeDetails> {
       ..writeByte(5)
       ..write(obj.selectedCategory)
       ..writeByte(6)
-      ..write(obj.imageUrls)
+      ..write(obj.imageByteList)
       ..writeByte(7)
       ..write(obj.selectedUnit);
   }

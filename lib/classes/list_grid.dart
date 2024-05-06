@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:recipe_book/db/favourite_functions.dart';
@@ -72,9 +72,11 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    if (recipe.imageUrls.isNotEmpty)
-                      Image.file(
-                        File(recipe.imageUrls[0]),
+                    if (recipe.imageByteList.isNotEmpty)
+                      Image.memory(
+                        (recipe.imageByteList.isNotEmpty
+                            ? recipe.imageByteList[0]
+                            : Uint8List(0)),
                         fit: BoxFit.cover,
                         errorBuilder: (BuildContext context, Object exception,
                             StackTrace? stackTrace) {
@@ -205,9 +207,10 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
             child: ListTile(
                 leading: ClipRRect(
                   borderRadius: BorderRadius.circular(4),
-                  child: Image.file(
-                    File(
-                        recipe.imageUrls.isNotEmpty ? recipe.imageUrls[0] : ''),
+                  child: Image.memory(
+                    (recipe.imageByteList.isNotEmpty
+                        ? recipe.imageByteList[0]
+                        : Uint8List(0)),
                     fit: BoxFit.cover,
                     width: 60,
                     height: 60,

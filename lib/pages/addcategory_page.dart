@@ -1,5 +1,6 @@
-import 'dart:io';
+import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:recipe_book/db/category_functions.dart';
@@ -13,17 +14,20 @@ class AddCategory extends StatefulWidget {
 }
 
 class _AddCategoryState extends State<AddCategory> {
-  File? _imageFile;
   final TextEditingController _nameController = TextEditingController();
-
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+  Uint8List? _imageBytes;
+  Future<void> pickImage() async {
+    final XFile? pickedImage = await ImagePicker().pickImage(
+      source: ImageSource.gallery, // Use gallery as the image source
+    );
 
     if (pickedImage != null) {
+      final Uint8List bytes = await pickedImage.readAsBytes();
       setState(() {
-        _imageFile = File(pickedImage.path);
+        _imageBytes = bytes;
       });
+    } else {
+      print('No image picked');
     }
   }
 
@@ -36,7 +40,7 @@ class _AddCategoryState extends State<AddCategory> {
   void clearButton() {
     setState(() {
       _nameController.clear();
-      _imageFile = null;
+      _imageBytes = null;
     });
   }
 
@@ -60,22 +64,22 @@ class _AddCategoryState extends State<AddCategory> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
-              child: GestureDetector(
-                onTap: _pickImage,
-                child: _imageFile == null
-                    ? Container(
+              child: _imageBytes != null
+                  ? Image.memory(
+                      _imageBytes!,
+                      width: 150,
+                      height: 150,
+                      fit: BoxFit.cover,
+                    )
+                  : GestureDetector(
+                      onTap: pickImage,
+                      child: Container(
                         width: 150,
                         height: 150,
                         color: Colors.grey[300],
                         child: const Icon(Icons.add_a_photo),
-                      )
-                    : Image.file(
-                        _imageFile!,
-                        width: 150,
-                        height: 150,
-                        fit: BoxFit.cover,
                       ),
-              ),
+                    ),
             ),
             const SizedBox(height: 20),
             TextField(
@@ -119,22 +123,19 @@ class _AddCategoryState extends State<AddCategory> {
     );
   }
 
-  int generateUniqueId() {
-    return DateTime.now().millisecondsSinceEpoch;
-  }
-
   void saveCategory() {
-    final int uniqueId = generateUniqueId();
-    if (_nameController.text.isNotEmpty && _imageFile != null) {
+    if (_nameController.text.isNotEmpty && _imageBytes != null) {
       String categoryName = _nameController.text;
+      String image = base64Encode(_imageBytes!);
       CategoryModel category = CategoryModel(
-        categoryId: uniqueId,
         categoryName: categoryName,
-        image: _imageFile!.path,
+        image: image,
       );
 
-      addCategory(category, category.categoryId);
-      print('passing $category and ${category.categoryId}');
+      addCategory(
+        category,
+      );
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Category Added'),

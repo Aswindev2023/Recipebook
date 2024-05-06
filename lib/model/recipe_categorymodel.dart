@@ -11,11 +11,8 @@ class CategoryModel extends HiveObject {
 
   @HiveField(2)
   final String image;
-  @HiveField(3)
-  int categoryId = 0;
 
   CategoryModel({
-    required this.categoryId,
     required this.categoryName,
     required this.image,
   });

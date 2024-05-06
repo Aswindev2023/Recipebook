@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:recipe_book/db/ingredients_function.dart';
 import 'package:recipe_book/db/step_function.dart';
@@ -67,14 +66,15 @@ class _DetailedPageState extends State<DetailedPage> {
               height: 200,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: widget.recipe.imageUrls.length,
+                itemCount: widget.recipe.imageByteList.length,
                 itemBuilder: (context, index) {
                   return Container(
                     margin: const EdgeInsets.only(right: 10),
                     width: 400,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: FileImage(File(widget.recipe.imageUrls[index])),
+                        image:
+                            MemoryImage((widget.recipe.imageByteList[index])),
                         fit: BoxFit.cover,
                       ),
                     ),

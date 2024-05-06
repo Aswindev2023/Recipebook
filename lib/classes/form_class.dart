@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_final_fields
 
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:recipe_book/classes/category_menu.dart';
 import 'package:recipe_book/classes/dynamicIngredients.dart';
@@ -12,31 +14,27 @@ class RecipeFormFields {
   final TextEditingController descriptionController;
   String cookTime = '';
   String? _selectedUnit = 'Minutes';
-  List<String> _imageUrls = [];
+  List<Uint8List> _imageBytesList = [];
   List<String> _steps = [];
   List<String> _ingredients = [];
   String? get selectedCategory => _selectedCategory;
   List<String> get ingredients => _ingredients;
   List<String> get steps => _steps;
-  List<String> get imageUrls => _imageUrls;
+  List<Uint8List> get imageBytesList => _imageBytesList;
   String? get selectedUnit => _selectedUnit;
 
   String? _selectedCategory;
 
   RecipeFormFields()
       : nameController = TextEditingController(),
-        descriptionController = TextEditingController() {
-    print('Default unit initialized: $_selectedUnit');
-  }
+        descriptionController = TextEditingController();
 
   void setCookTime(String value) {
     cookTime = value;
   }
 
   void setUnit(String unit) {
-    print('Setting unit to: $unit');
     _selectedUnit = unit;
-    print('Selected unit updated: $_selectedUnit');
   }
 
   void setIngredients(List<String> ingredients) {
@@ -51,8 +49,8 @@ class RecipeFormFields {
     _selectedCategory = category;
   }
 
-  void setImageUrls(List<String> urls) {
-    _imageUrls = urls;
+  void setImages(List<Uint8List> imageBytesList) {
+    _imageBytesList = imageBytesList;
   }
 
   RecipeForm getRecipeForm() {
@@ -60,7 +58,7 @@ class RecipeFormFields {
       name: nameController.text,
       description: descriptionController.text,
       cookTime: '$cookTime $_selectedUnit',
-      imageUrls: _imageUrls,
+      image: _imageBytesList,
       ingredients: _ingredients,
       steps: _steps,
       categories: [_selectedCategory ?? ''],
@@ -96,9 +94,9 @@ class RecipeFormFields {
 }
 
 Widget buildImagePickerAndDisplay(RecipeFormFields recipeFormFields) {
-  return ImagePickerAndDisplay(onImagesSelected: (List<String> urls) {
-    print('buildImagePickerAndDisplay:$urls');
-    recipeFormFields._imageUrls = urls;
+  return ImagePickerAndDisplay(onImagesSelected: (List<Uint8List> bytesList) {
+    print('buildImagePickerAndDisplay: $bytesList');
+    recipeFormFields._imageBytesList = bytesList;
   });
 }
 
@@ -108,7 +106,6 @@ Widget buildStepField(RecipeFormFields recipeFormFields) {
     fieldName: 'Steps',
     onStepsChanged: (List<String> steps) {
       recipeFormFields.setSteps(steps);
-      print('steps count:$steps');
     },
   );
 }
@@ -205,19 +202,15 @@ class _CookTimeFieldState extends State<CookTimeField> {
 
   void setUnit(String? unit) {
     if (unit != null) {
-      print('Unit received: $unit');
       setState(() {
         _selectedUnit = unit;
       });
       widget.onUnitChanged(_selectedUnit);
-    } else {
-      print('Received null unit');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    print('Building CookTimeField widget with selected unit: $_selectedUnit');
     return Row(
       children: [
         SizedBox(

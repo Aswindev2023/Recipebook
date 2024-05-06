@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive/hive.dart';
 part 'recipebook_model.g.dart';
@@ -23,7 +25,7 @@ class RecipeDetails extends HiveObject {
   final String selectedCategory;
 
   @HiveField(6)
-  final List<String> imageUrls;
+  final List<Uint8List> imageByteList;
 
   @HiveField(7)
   final String? selectedUnit;
@@ -34,7 +36,7 @@ class RecipeDetails extends HiveObject {
     required this.description,
     required this.cookTime,
     required this.selectedCategory,
-    required this.imageUrls,
+    required this.imageByteList,
     required this.selectedUnit,
   });
 }

@@ -44,6 +44,8 @@ dependencies:
   multi_image_picker: ^4.8.01
   image: ^3.0.1
   uuid: ^3.0.4
+  sizer: ^2.0.14
+  
  
 
 dev_dependencies:

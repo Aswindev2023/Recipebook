@@ -1,11 +1,9 @@
-// ignore_for_file: unnecessary_null_comparison
-
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImagePickerAndDisplay extends StatefulWidget {
-  final void Function(List<String> urls) onImagesSelected;
+  final void Function(List<Uint8List> bytesList) onImagesSelected;
 
   const ImagePickerAndDisplay({
     Key? key,
@@ -18,7 +16,7 @@ class ImagePickerAndDisplay extends StatefulWidget {
 
 class _ImagePickerAndDisplayState extends State<ImagePickerAndDisplay> {
   final ImagePicker _imagePicker = ImagePicker();
-  List<String> _imageUrls = [];
+  List<Uint8List> _imageBytesList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -29,21 +27,18 @@ class _ImagePickerAndDisplayState extends State<ImagePickerAndDisplay> {
           child: const Text('Pick Images'),
         ),
         const SizedBox(height: 20),
-        _imageUrls.isEmpty
+        _imageBytesList.isEmpty
             ? const Text('No images selected')
             : SizedBox(
                 height: 200,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: _imageUrls.length,
+                  itemCount: _imageBytesList.length,
                   itemBuilder: (context, index) {
-                    return Container(
-                      margin: const EdgeInsets.only(right: 10),
+                    return Image.memory(
+                      _imageBytesList[index],
                       width: 400,
-                      child: Image.file(
-                        File(_imageUrls[index]),
-                        fit: BoxFit.cover,
-                      ),
+                      fit: BoxFit.cover,
                     );
                   },
                 ),
@@ -54,17 +49,14 @@ class _ImagePickerAndDisplayState extends State<ImagePickerAndDisplay> {
 
   Future<void> _pickImages() async {
     List<XFile>? pickedImages = await _imagePicker.pickMultiImage();
-    if (pickedImages != null) {
-      List<String> imagePaths = [];
-      for (var pickedImage in pickedImages) {
-        final File imageFile = File(pickedImage.path);
-        final String imagePath = imageFile.path;
-        imagePaths.add(imagePath);
-      }
-      setState(() {
-        _imageUrls = List.from(_imageUrls)..addAll(imagePaths);
-      });
-      widget.onImagesSelected(_imageUrls);
+    List<Uint8List> bytesList = [];
+    for (var pickedImage in pickedImages) {
+      final bytes = await pickedImage.readAsBytes();
+      bytesList.add(bytes);
     }
+    setState(() {
+      _imageBytesList = List.from(_imageBytesList)..addAll(bytesList);
+    });
+    widget.onImagesSelected(_imageBytesList);
   }
 }

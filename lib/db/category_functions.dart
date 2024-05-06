@@ -2,15 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:recipe_book/db/recipe_functions.dart';
 import 'package:recipe_book/model/recipe_categorymodel.dart';
 
 ValueNotifier<List<CategoryModel>> categoryListNotifier = ValueNotifier([]);
-void addCategory(CategoryModel value, int categoryId) async {
-  print('category id:$categoryId');
+void addCategory(CategoryModel value) async {
   final categories = await Hive.openBox<CategoryModel>('Category_db');
   final id = await categories.add(value);
-  value.categoryId = categoryId;
+
   value.id = id;
   categoryListNotifier.value.add(value);
   categoryListNotifier.notifyListeners();
@@ -35,19 +33,19 @@ Future<void> updateCategory(CategoryModel value, int id) async {
   categories.put(value.id, value);
 }*/
 
-void deleteCategory(int? categoryid) async {
-  if (categoryid == null) {
+void deleteCategory(int? id) async {
+  if (id == null) {
     print('id is null');
     return;
   }
   final categoryBox = await Hive.openBox<CategoryModel>('Category_db');
-  if (categoryBox.containsKey(categoryid)) {
-    await categoryBox.delete(categoryid);
+  if (categoryBox.containsKey(id)) {
+    await categoryBox.delete(id);
     categoryListNotifier.value = categoryBox.values.toList();
     categoryListNotifier.notifyListeners();
     getCategoryList();
-    print('Deleted recipe with ID: $categoryid');
+    print('Deleted recipe with ID: $id');
   } else {
-    print('Recipe with ID $categoryid does not exist');
+    print('Recipe with ID $id does not exist');
   }
 }

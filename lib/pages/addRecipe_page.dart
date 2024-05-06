@@ -144,10 +144,10 @@ class _MyFormPageState extends State<MyFormPage> {
         description: recipeFormFields.descriptionController.text,
         cookTime: recipeFormFields.cookTime,
         selectedCategory: recipeFormFields.selectedCategory!,
-        imageUrls: recipeFormFields.imageUrls,
+        imageByteList: recipeFormFields.imageBytesList,
         selectedUnit: recipeFormFields.selectedUnit!,
       );
-      // print('addrecipe:${recipe.imageUrls}');
+
       addRecipe(recipe, uniqueId);
       final ingredients = RecipeIngredients(
         ingredient: recipeFormFields.ingredients,

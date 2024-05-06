@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:recipe_book/model/Ingredients_model.dart';
 import 'package:recipe_book/model/favourite_model.dart';
 import 'package:recipe_book/model/recipe_categorymodel.dart';
-
 import 'package:recipe_book/model/recipebook_model.dart';
 import 'package:recipe_book/model/steps_model.dart';
 import 'package:recipe_book/pages/home_page.dart';
@@ -45,84 +43,95 @@ class MyHomePage extends StatelessWidget {
   const MyHomePage({
     Key? key,
   }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('lib/assets/cover.png'),
-                fit: BoxFit.cover,
+      body: SafeArea(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('lib/assets/cover.png'),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          Center(
-            child: Container(
-              width: 180,
-              height: 180,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Color.fromARGB(255, 3, 193, 227),
-              ),
-              child: Center(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(90),
-                  child: Image.asset(
-                    'lib/assets/cake.jpg',
-                    width: 169,
-                    height: 169,
-                    fit: BoxFit.cover,
+            FractionallySizedBox(
+              widthFactor: 0.8,
+              heightFactor: 0.8,
+              child: Align(
+                alignment: Alignment.center,
+                child: Container(
+                  width: 180,
+                  height: 180,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color.fromARGB(255, 3, 193, 227),
+                  ),
+                  child: Center(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(90),
+                      child: Image.asset(
+                        'lib/assets/cake.jpg',
+                        width: 169,
+                        height: 169,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          const Positioned(
-            top: 220,
-            left: 10,
-            right: 10,
-            child: Center(
-              child: Text(
-                'Recipe Book',
-                style: TextStyle(
-                  fontFamily: 'Irish Grover',
-                  fontSize: 60,
-                  color: Colors.white,
+            FractionallySizedBox(
+              widthFactor: 1,
+              heightFactor: 0.4,
+              alignment: Alignment.topCenter,
+              child: Center(
+                child: Text(
+                  'Recipe Book',
+                  style: TextStyle(
+                    fontFamily: 'Irish Grover',
+                    fontSize: MediaQuery.of(context).size.width * 0.15,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-              bottom: 115,
-              left: 0,
-              right: 0,
+            FractionallySizedBox(
+              widthFactor: 0.8,
+              heightFactor: 0.2,
+              alignment: Alignment.bottomCenter,
               child: Center(
                 child: SizedBox(
                   width: 150,
                   height: 70,
                   child: TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Homepage()));
-                      },
-                      style: TextButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 26, 243, 34),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Homepage()),
+                      );
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 26, 243, 34),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      child: const Text(
-                        'Start',
-                        style: TextStyle(fontSize: 25, color: Colors.white),
-                      )),
+                    ),
+                    child: const Text(
+                      'Start',
+                      style: TextStyle(fontSize: 25, color: Colors.white),
+                    ),
+                  ),
                 ),
-              ))
-        ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

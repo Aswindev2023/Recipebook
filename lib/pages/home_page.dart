@@ -64,7 +64,7 @@ class _HomepageState extends State<Homepage> {
           centerTitle: true,
           title: const Text(
             'Recipes',
-            style: TextStyle(fontSize: 30, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
           ),
           actions: [
             IconButton(

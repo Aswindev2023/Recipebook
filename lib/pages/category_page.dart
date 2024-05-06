@@ -1,7 +1,5 @@
-import 'dart:io';
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:recipe_book/classes/bottomnavigationbar.dart';
 import 'package:recipe_book/db/category_functions.dart';
 import 'package:recipe_book/db/recipe_functions.dart';
@@ -32,29 +30,23 @@ class _CategoryState extends State<Category> {
     print('getCategory in view page is called');
     List<CategoryModel> categoriesList = await getCategoryList();
     print('category list is:$categoriesList');
+
     setState(() {
       _categories = categoriesList;
     });
   }
 
-  Future<void> deleteCategories(String name, int categoryId) async {
+  Future<void> deleteCategories(String name, int id) async {
     final List<RecipeDetails> recipes = await getRecipes();
     final updatedRecipes =
         recipes.any((recipe) => recipe.selectedCategory == name);
     if (!updatedRecipes) {
-      deleteCategory(categoryId);
+      deleteCategory(id);
       setState(() {
         getCategory();
       });
     }
   }
-
-  /* Future<void> getCategory() async {
-    final categories = await Hive.openBox<CategoryModel>('Category_db');
-    setState(() {
-      _categories = categories.values.toList();
-    });
-  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +59,7 @@ class _CategoryState extends State<Category> {
         centerTitle: true,
         title: const Text(
           'Categories',
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
@@ -104,15 +96,17 @@ class _CategoryState extends State<Category> {
               itemCount: _categories.length,
               itemBuilder: (context, index) {
                 final CategoryModel categories = _categories[index];
+                print('Base64 string: ${categories.image}');
+
                 return Card(
                   elevation: 4,
                   child: ListTile(
                     title: Text(categories.categoryName),
                     leading: CircleAvatar(
                       backgroundImage: categories.image.isNotEmpty
-                          ? FileImage(File(categories.image))
-                          : const AssetImage('assets/placeholder_image.png')
-                              as ImageProvider,
+                          ? MemoryImage(base64Decode(categories.image))
+                              as ImageProvider<Object>
+                          : const AssetImage('assets/placeholder_image.png'),
                     ),
                     trailing: PopupMenuButton(
                       onSelected: (value) async {
