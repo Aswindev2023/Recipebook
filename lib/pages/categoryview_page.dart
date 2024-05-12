@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:recipe_book/classes/categoryview_layout.dart';
+import 'package:recipe_book/classes/sortingoption_widget.dart';
 import 'package:recipe_book/db/recipe_functions.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
+import 'package:recipe_book/pages/settings_page.dart';
 
 class CategoryViewpage extends StatefulWidget {
   final String categoryname;
@@ -53,12 +55,6 @@ class _CategoryViewpageState extends State<CategoryViewpage> {
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.sort),
-              onPressed: () {
-                _showSortingOptions(context);
-              },
-            ),
-            IconButton(
               onPressed: () {
                 setState(() {
                   _isGridView = !_isGridView;
@@ -68,7 +64,46 @@ class _CategoryViewpageState extends State<CategoryViewpage> {
                   ? const Icon(Icons.list)
                   : const Icon(Icons.grid_on),
             ),
-            const SizedBox(width: 10),
+            PopupMenuButton<String>(
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                PopupMenuItem<String>(
+                  value: 'Sort By',
+                  child: ListTile(
+                    title: const Text('Sort By'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _showSortingOptions(context);
+                    },
+                  ),
+                ),
+                PopupMenuItem<String>(
+                  value: 'Filtered By',
+                  child: ListTile(
+                    title: const Text('Filtered By'),
+                    onTap: () {
+                      // Handle 'Filtered By' tap
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+                PopupMenuItem<String>(
+                  value: 'Settings',
+                  child: ListTile(
+                    title: const Text('Settings'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SettingsPage()));
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              width: 10,
+            )
           ],
         ),
       ),
@@ -95,11 +130,13 @@ class _CategoryViewpageState extends State<CategoryViewpage> {
                       isGridView: _isGridView,
                       recipes: _recipes,
                       fetchRecipes: _fetchRecipes,
+                      categoryName: widget.categoryname,
                     )
                   : CategoryWidget(
                       isGridView: false,
                       recipes: _recipes,
                       fetchRecipes: _fetchRecipes,
+                      categoryName: widget.categoryname,
                     ),
             ),
           ],
@@ -112,38 +149,10 @@ class _CategoryViewpageState extends State<CategoryViewpage> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Center(
-                child: Text(
-                  'Sort By',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              ListTile(
-                title: const Text('Time(Lowest to Highest)'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _sortRecipes(true);
-                },
-              ),
-              ListTile(
-                title: const Text('Time(Highest to Lowest)'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _sortRecipes(false);
-                },
-              ),
-            ],
-          ),
+        return SortingOptionsWidget(
+          onSort: (ascending) {
+            _sortRecipes(ascending);
+          },
         );
       },
     );
@@ -152,12 +161,32 @@ class _CategoryViewpageState extends State<CategoryViewpage> {
   void _sortRecipes(bool ascending) {
     List<RecipeDetails> sortedRecipes = List.from(_recipes);
     setState(() {
-      if (ascending) {
-        sortedRecipes.sort((a, b) => a.cookTime.compareTo(b.cookTime));
-      } else {
-        sortedRecipes.sort((a, b) => b.cookTime.compareTo(a.cookTime));
-      }
+      sortedRecipes.sort((a, b) => _compareCookTime(a, b, ascending));
       _recipes = sortedRecipes;
     });
+  }
+
+  int _compareCookTime(
+      RecipeDetails recipeA, RecipeDetails recipeB, bool ascending) {
+    // Extract cook times and units
+    int timeA = int.parse(recipeA.cookTime);
+    int timeB = int.parse(recipeB.cookTime);
+    String unitA = recipeA.selectedUnit!;
+    String unitB = recipeB.selectedUnit!;
+
+    // Convert both cook times to minutes for comparison
+    if (unitA == 'Hours') {
+      timeA *= 60;
+    }
+    if (unitB == 'Hours') {
+      timeB *= 60;
+    }
+
+    // Compare cook times based on ascending or descending order
+    if (ascending) {
+      return timeA.compareTo(timeB);
+    } else {
+      return timeB.compareTo(timeA);
+    }
   }
 }

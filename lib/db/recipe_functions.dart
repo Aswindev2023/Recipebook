@@ -28,19 +28,45 @@ Future<List<RecipeDetails>> getRecipes() async {
   return recipes;
 }
 
-void deleteRecipe(int? id) async {
-  if (id == null) {
+void deleteRecipe(int? recipeId) async {
+  if (recipeId == null) {
     print('Recipe ID cannot be null');
     return;
   }
+
   final recipesBox = await Hive.openBox<RecipeDetails>('Recipe_db');
-  if (recipesBox.containsKey(id)) {
-    await recipesBox.delete(id);
+  final recipeIndex = recipesBox.values
+      .toList()
+      .indexWhere((recipe) => recipe.recipeId == recipeId);
+
+  if (recipeIndex != -1) {
+    await recipesBox.deleteAt(recipeIndex);
+    print('Deleted recipe with ID: $recipeId');
+  } else {
+    print('Recipe with ID $recipeId does not exist');
+  }
+
+  recipeListNotifier.value = recipesBox.values.toList();
+  recipeListNotifier.notifyListeners();
+}
+
+void updateRecipe(int recipeId, RecipeDetails updatedRecipe) async {
+  final recipesBox = await Hive.openBox<RecipeDetails>('Recipe_db');
+  final recipeIndex = recipesBox.values
+      .toList()
+      .indexWhere((recipe) => recipe.recipeId == recipeId);
+
+  if (recipeIndex != -1) {
+    final oldRecipe = recipesBox.getAt(recipeIndex)!;
+    updatedRecipe.recipeId =
+        oldRecipe.recipeId; // Ensure the ID remains the same
+    await recipesBox.putAt(recipeIndex, updatedRecipe);
+    print('Updated recipe with ID: $recipeId');
+
+    // Update the ValueNotifier list
     recipeListNotifier.value = recipesBox.values.toList();
     recipeListNotifier.notifyListeners();
-    getRecipes();
-    print('Deleted recipe with ID: $id');
   } else {
-    print('Recipe with ID $id does not exist');
+    print('Recipe with ID $recipeId does not exist');
   }
 }

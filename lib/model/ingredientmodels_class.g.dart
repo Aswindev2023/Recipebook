@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'Ingredients_model.dart';
+part of 'ingredientmodels_class.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator

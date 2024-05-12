@@ -4,8 +4,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:recipe_book/classes/category_menu.dart';
-import 'package:recipe_book/classes/dynamicIngredients.dart';
-import 'package:recipe_book/classes/dynamicSteps.dart';
+import 'package:recipe_book/classes/dynamic_ingredient.dart';
+import 'package:recipe_book/classes/dynamic_steps.dart';
 import 'package:recipe_book/classes/image_picker.dart';
 import 'package:recipe_book/model/recipeform_model.dart';
 
@@ -15,11 +15,11 @@ class RecipeFormFields {
   String cookTime = '';
   String? _selectedUnit = 'Minutes';
   List<Uint8List> _imageBytesList = [];
-  List<String> _steps = [];
-  List<String> _ingredients = [];
-  String? get selectedCategory => _selectedCategory;
+  List<String> _steps = [''];
+  List<String> _ingredients = [''];
   List<String> get ingredients => _ingredients;
   List<String> get steps => _steps;
+  String? get selectedCategory => _selectedCategory;
   List<Uint8List> get imageBytesList => _imageBytesList;
   String? get selectedUnit => _selectedUnit;
 
@@ -31,26 +31,32 @@ class RecipeFormFields {
 
   void setCookTime(String value) {
     cookTime = value;
+    print('Cook time set to: $value');
   }
 
   void setUnit(String unit) {
     _selectedUnit = unit;
+    print('cook time unit:$_selectedUnit');
   }
 
   void setIngredients(List<String> ingredients) {
     _ingredients = ingredients;
+    print('ingredients  set to: $ingredients');
   }
 
   void setSteps(List<String> steps) {
     _steps = steps;
+    print('steps set to: $steps');
   }
 
   void setSelectedCategory(String? category) {
     _selectedCategory = category;
+    print('Category set to: $category');
   }
 
   void setImages(List<Uint8List> imageBytesList) {
     _imageBytesList = imageBytesList;
+    print('image set to: $imageBytesList');
   }
 
   RecipeForm getRecipeForm() {
@@ -94,15 +100,23 @@ class RecipeFormFields {
 }
 
 Widget buildImagePickerAndDisplay(RecipeFormFields recipeFormFields) {
-  return ImagePickerAndDisplay(onImagesSelected: (List<Uint8List> bytesList) {
-    print('buildImagePickerAndDisplay: $bytesList');
-    recipeFormFields._imageBytesList = bytesList;
-  });
+  return ImagePickerAndDisplay(
+    onImagesSelected: (List<Uint8List> bytesList) {
+      print('buildImagePickerAndDisplay: $bytesList');
+      recipeFormFields.setImages(bytesList);
+    },
+    initialImageBytesList: recipeFormFields.imageBytesList,
+  );
 }
 
-Widget buildStepField(RecipeFormFields recipeFormFields) {
+Widget buildStepField(
+  RecipeFormFields recipeFormFields,
+) {
+  print(
+      'buildStepField Function Signature: Takes RecipeFormFields object as argument');
+  print('Current Value of _steps ${recipeFormFields.steps}');
   return DynamicStepField(
-    initialFields: recipeFormFields._steps,
+    initialFields: recipeFormFields.steps,
     fieldName: 'Steps',
     onStepsChanged: (List<String> steps) {
       recipeFormFields.setSteps(steps);
@@ -110,9 +124,14 @@ Widget buildStepField(RecipeFormFields recipeFormFields) {
   );
 }
 
-Widget buildIngredientField(RecipeFormFields recipeFormFields) {
+Widget buildIngredientField(
+  RecipeFormFields recipeFormFields,
+) {
+  print(
+      'buildIngredientField Function Signature: Takes RecipeFormFields object as argument');
+  print('current value of _ingredients: ${recipeFormFields.ingredients}');
   return DynamicIngredientField(
-    initialIngredients: recipeFormFields._ingredients,
+    initialIngredients: recipeFormFields.ingredients,
     fieldName: 'Ingredients',
     onIngredientsChanged: (List<String> ingredients) {
       recipeFormFields.setIngredients(ingredients);
@@ -146,6 +165,10 @@ class NameField extends StatelessWidget {
         hintText: 'Add Name',
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
       ),
+      style: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w500,
+      ),
     );
   }
 }
@@ -170,6 +193,10 @@ class DescriptionField extends StatelessWidget {
       keyboardType: TextInputType.multiline,
       maxLines: null,
       minLines: 2,
+      style: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w500,
+      ),
     );
   }
 }
@@ -178,11 +205,15 @@ class CookTimeField extends StatefulWidget {
   final Function(String) onCookTimeChanged;
   final String? Function(String?) validator;
   final Function(String) onUnitChanged;
+  final String initialValue;
+  final String initialUnit;
   const CookTimeField({
     super.key,
     required this.onCookTimeChanged,
     required this.validator,
     required this.onUnitChanged,
+    required this.initialValue,
+    required this.initialUnit,
   });
 
   @override
@@ -190,8 +221,15 @@ class CookTimeField extends StatefulWidget {
 }
 
 class _CookTimeFieldState extends State<CookTimeField> {
-  String cookTime = '';
+  late String cookTime;
   String _selectedUnit = 'Minutes';
+
+  @override
+  void initState() {
+    super.initState();
+    cookTime = widget.initialValue;
+    _selectedUnit = widget.initialUnit;
+  }
 
   void setCookTime(String value) {
     setState(() {
@@ -225,6 +263,11 @@ class _CookTimeFieldState extends State<CookTimeField> {
                   OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             ),
             onChanged: setCookTime,
+            initialValue: cookTime,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
         const SizedBox(width: 10),

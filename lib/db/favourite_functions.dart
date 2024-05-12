@@ -34,3 +34,23 @@ Future<List<RecipeDetails>> getFavouriteRecipes() async {
 
   return filteredRecipes;
 }
+
+Future<void> removeFromFavorites(int recipeId) async {
+  final Box<Favourites> favouritesBox =
+      await Hive.openBox<Favourites>('favourite_db');
+  int existingIndex = -1;
+
+  for (int i = 0; i < favouritesBox.length; i++) {
+    if (favouritesBox.getAt(i)!.recipeId == recipeId) {
+      existingIndex = i;
+      break;
+    }
+  }
+
+  if (existingIndex != -1) {
+    await favouritesBox.deleteAt(existingIndex);
+
+    getFavouriteRecipes();
+    favouriteListNotifier.value = favouritesBox.values.toList();
+  }
+}

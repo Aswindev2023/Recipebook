@@ -6,17 +6,20 @@ import 'package:recipe_book/db/recipe_functions.dart';
 import 'package:recipe_book/db/step_function.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
 import 'package:recipe_book/pages/detailedview_page.dart';
+import 'package:recipe_book/pages/editrecipe_page.dart';
 
 class CategoryWidget extends StatefulWidget {
   final bool isGridView;
   final List<RecipeDetails> recipes;
   final Future<void> Function(String) fetchRecipes;
+  final String categoryName;
 
   const CategoryWidget({
     Key? key,
     required this.isGridView,
     required this.recipes,
     required this.fetchRecipes,
+    required this.categoryName,
   }) : super(key: key);
 
   @override
@@ -24,6 +27,44 @@ class CategoryWidget extends StatefulWidget {
 }
 
 class _CategoryWidgetState extends State<CategoryWidget> {
+  void delete(int id) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Deletion'),
+          content: const Text(
+              'Are you sure you want to delete this recipe? This action cannot be undone.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  deleteRecipe(id);
+                  deleteIngredient(id);
+                  deleteStep(id);
+                  widget.fetchRecipes(widget.categoryName);
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Recipe deleted'),
+                  ),
+                );
+              },
+              child: const Text('Delete'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return widget.isGridView
@@ -43,10 +84,12 @@ class _CategoryWidgetState extends State<CategoryWidget> {
       );
     }
     return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent:
+            200, // Adjust the maximum width of each item as needed
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
+        childAspectRatio: 1,
       ),
       itemCount: recipes.length,
       itemBuilder: (BuildContext context, int index) {
@@ -125,11 +168,7 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                         onSelected: (value) {
                           if (value == 'delete') {
                             setState(() {
-                              deleteRecipe(recipe.id);
-                              deleteIngredient(recipe.id);
-                              deleteStep(recipe.id);
-
-                              widget.fetchRecipes;
+                              delete(recipe.recipeId);
                             });
                           }
                           if (value == 'edit') {
@@ -170,6 +209,8 @@ class _CategoryWidgetState extends State<CategoryWidget> {
   Widget _buildListView(
     List<RecipeDetails> recipes,
   ) {
+    final brightness = Theme.of(context).brightness;
+    final isDarkTheme = brightness == Brightness.dark;
     if (recipes.isEmpty) {
       return const Center(
         child: Text(
@@ -192,7 +233,9 @@ class _CategoryWidgetState extends State<CategoryWidget> {
             );
           },
           child: Card(
-            color: const Color.fromARGB(255, 255, 254, 234),
+            color: isDarkTheme
+                ? const Color.fromARGB(255, 0, 0, 0)
+                : const Color.fromARGB(255, 255, 255, 255),
             elevation: 8,
             child: ListTile(
                 leading: ClipRRect(
@@ -206,7 +249,12 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                     height: 60,
                   ),
                 ),
-                title: Text(recipe.name),
+                title: Text(recipe.name,
+                    style: TextStyle(
+                      color: isDarkTheme
+                          ? const Color.fromARGB(255, 255, 255, 255)
+                          : const Color.fromARGB(255, 0, 0, 0),
+                    )),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -214,18 +262,15 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                       onSelected: (value) {
                         if (value == 'delete') {
                           setState(() {
-                            deleteRecipe(recipe.id);
-                            deleteIngredient(recipe.id);
-                            deleteStep(recipe.id);
-
-                            widget.fetchRecipes;
+                            delete(recipe.recipeId);
                           });
                         }
                         if (value == 'edit') {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const Placeholder(),
+                                builder: (context) =>
+                                    RecipeEditPage(recipeDetails: recipe),
                               ));
                         }
                       },
@@ -243,8 +288,12 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                   ],
                 ),
                 subtitle: Text(
-                  'Cook time: ${recipe.cookTime} ${recipe.selectedUnit ?? ''}',
-                )),
+                    'Cook time: ${recipe.cookTime} ${recipe.selectedUnit ?? ''}',
+                    style: TextStyle(
+                      color: isDarkTheme
+                          ? const Color.fromARGB(255, 255, 255, 255)
+                          : const Color.fromARGB(255, 0, 0, 0),
+                    ))),
           ),
         );
       },

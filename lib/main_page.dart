@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:recipe_book/model/Ingredients_model.dart';
+import 'package:provider/provider.dart';
+import 'package:recipe_book/model/ingredientmodels_class.dart';
 import 'package:recipe_book/model/favourite_model.dart';
 import 'package:recipe_book/model/recipe_categorymodel.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
@@ -23,7 +24,12 @@ Future<void> main() async {
     Hive.registerAdapter(FavouritesAdapter());
   }
 
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -32,9 +38,15 @@ class MyApp extends StatelessWidget {
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: MyHomePage(),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, _) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme:
+              themeProvider.isDarkMode ? ThemeData.dark() : ThemeData.light(),
+          home: const MyHomePage(),
+        );
+      },
     );
   }
 }
@@ -134,5 +146,16 @@ class MyHomePage extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class ThemeProvider extends ChangeNotifier {
+  bool _isDarkMode = false;
+
+  bool get isDarkMode => _isDarkMode;
+
+  void toggleTheme(bool isDarkMode) {
+    _isDarkMode = isDarkMode;
+    notifyListeners();
   }
 }

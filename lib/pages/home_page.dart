@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_book/classes/bottomnavigationbar.dart';
+import 'package:recipe_book/classes/filterby_category.dart';
 import 'package:recipe_book/classes/list_grid.dart';
+import 'package:recipe_book/classes/sortingoption_widget.dart';
 import 'package:recipe_book/db/recipe_functions.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
+import 'package:recipe_book/pages/settings_page.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({
@@ -19,6 +22,8 @@ class _HomepageState extends State<Homepage> {
   List<RecipeDetails> _recipes = [];
 
   List<RecipeDetails> _filteredRecipes = [];
+  List<String> _selectedCategories = []; // Define this in your state class
+
   String _searchQuery = '';
   @override
   void initState() {
@@ -36,43 +41,49 @@ class _HomepageState extends State<Homepage> {
     });
   }
 
-  void _filterRecipes(String query) {
+  void _filterRecipes(String query, List<String> selectedCategories) {
     setState(() {
       _searchQuery = query;
-      if (query.isNotEmpty) {
-        _filteredRecipes = _recipes
-            .where((recipe) =>
-                recipe.name.toLowerCase().contains(query.toLowerCase()))
-            .toList();
+
+      final List<RecipeDetails> searchFilteredRecipes =
+          _recipes.where((recipe) {
+        return query.isEmpty ||
+            recipe.name.toLowerCase().contains(query.toLowerCase());
+      }).toList();
+
+      if (selectedCategories.isEmpty) {
+        _filteredRecipes = List.from(searchFilteredRecipes);
       } else {
-        _filteredRecipes = List.from(_recipes);
+        _filteredRecipes = searchFilteredRecipes.where((recipe) {
+          return selectedCategories.contains(recipe.selectedCategory);
+        }).toList();
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
+    final isDarkTheme = brightness == Brightness.dark;
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(50),
         child: AppBar(
-          leading: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
+          leading: Icon(Icons.arrow_back,
+              color: isDarkTheme
+                  ? const Color.fromARGB(117, 32, 31, 31)
+                  : Colors.white),
           centerTitle: true,
-          title: const Text(
+          title: Text(
             'Recipes',
-            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+              color: isDarkTheme ? Colors.white : Colors.black,
+            ),
           ),
           actions: [
-            IconButton(
-              icon: const Icon(Icons.sort),
-              onPressed: () {
-                _showSortingOptions(context);
-              },
-            ),
             IconButton(
               onPressed: () {
                 setState(() {
@@ -80,10 +91,55 @@ class _HomepageState extends State<Homepage> {
                 });
               },
               icon: _isGridView
-                  ? const Icon(Icons.list)
-                  : const Icon(Icons.grid_on),
+                  ? Icon(
+                      Icons.list,
+                      color: isDarkTheme ? Colors.white : Colors.black,
+                    )
+                  : Icon(
+                      Icons.grid_on,
+                      color: isDarkTheme ? Colors.white : Colors.black,
+                    ),
             ),
-            const SizedBox(width: 10),
+            PopupMenuButton<String>(
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                PopupMenuItem<String>(
+                  value: 'Sort By',
+                  child: ListTile(
+                    title: const Text('Sort By'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _showSortingOptions(context);
+                    },
+                  ),
+                ),
+                PopupMenuItem<String>(
+                  value: 'Filtered By',
+                  child: ListTile(
+                    title: const Text('Filtered By'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _showCategorySelection(context);
+                    },
+                  ),
+                ),
+                PopupMenuItem<String>(
+                  value: 'Settings',
+                  child: ListTile(
+                    title: const Text('Settings'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SettingsPage()));
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              width: 10,
+            )
           ],
         ),
       ),
@@ -98,12 +154,14 @@ class _HomepageState extends State<Homepage> {
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 6),
-            const Text(
+            Text(
               'Let\'s Make Something',
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.normal,
-                color: Color.fromARGB(255, 84, 83, 83),
+                color: isDarkTheme
+                    ? const Color.fromARGB(255, 207, 204, 204)
+                    : const Color.fromARGB(255, 84, 83, 83),
               ),
             ),
             const SizedBox(height: 16),
@@ -115,14 +173,15 @@ class _HomepageState extends State<Homepage> {
                 color: const Color.fromARGB(255, 236, 234, 234),
               ),
               child: TextField(
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.search),
-                  hintText: 'Search...',
-                  hintStyle: TextStyle(fontSize: 15),
-                  border: InputBorder.none,
-                ),
-                onChanged: _filterRecipes,
-              ),
+                  decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.search),
+                    hintText: 'Search...',
+                    hintStyle: TextStyle(fontSize: 15),
+                    border: InputBorder.none,
+                  ),
+                  onChanged: (query) {
+                    _filterRecipes(query, _selectedCategories);
+                  }),
             ),
             const SizedBox(height: 20),
             Expanded(
@@ -153,38 +212,10 @@ class _HomepageState extends State<Homepage> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Center(
-                child: Text(
-                  'Sort By',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              ListTile(
-                title: const Text('Time(Lowest to Highest)'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _sortRecipes(true);
-                },
-              ),
-              ListTile(
-                title: const Text('Time(Highest to Lowest)'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _sortRecipes(false);
-                },
-              ),
-            ],
-          ),
+        return SortingOptionsWidget(
+          onSort: (ascending) {
+            _sortRecipes(ascending);
+          },
         );
       },
     );
@@ -193,12 +224,49 @@ class _HomepageState extends State<Homepage> {
   void _sortRecipes(bool ascending) {
     List<RecipeDetails> sortedRecipes = List.from(_recipes);
     setState(() {
-      if (ascending) {
-        sortedRecipes.sort((a, b) => a.cookTime.compareTo(b.cookTime));
-      } else {
-        sortedRecipes.sort((a, b) => b.cookTime.compareTo(a.cookTime));
-      }
+      sortedRecipes.sort((a, b) => _compareCookTime(a, b, ascending));
       _recipes = sortedRecipes;
     });
+  }
+
+  int _compareCookTime(
+      RecipeDetails recipeA, RecipeDetails recipeB, bool ascending) {
+    int timeA = int.parse(recipeA.cookTime);
+    int timeB = int.parse(recipeB.cookTime);
+    String unitA = recipeA.selectedUnit!;
+    String unitB = recipeB.selectedUnit!;
+    if (unitA == 'Hours') {
+      timeA *= 60;
+    }
+    if (unitB == 'Hours') {
+      timeB *= 60;
+    }
+    if (ascending) {
+      return timeA.compareTo(timeB);
+    } else {
+      return timeB.compareTo(timeA);
+    }
+  }
+
+  void _showCategorySelection(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return CategorySelectionBottomSheet(
+          onDone: (selectedCategories) {
+            setState(() {
+              _selectedCategories = selectedCategories;
+            });
+            _filterRecipes(_searchQuery, _selectedCategories);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Filters applied'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }

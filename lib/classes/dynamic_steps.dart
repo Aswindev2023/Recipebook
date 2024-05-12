@@ -1,38 +1,54 @@
 import 'package:flutter/material.dart';
 
-class DynamicIngredientField extends StatefulWidget {
-  final List<String> initialIngredients;
+class DynamicStepField extends StatefulWidget {
+  final List<String> initialFields;
   final String fieldName;
-  final Function(List<String>) onIngredientsChanged;
+  final Function(List<String>) onStepsChanged;
 
-  const DynamicIngredientField({
+  const DynamicStepField({
     Key? key,
-    required this.initialIngredients,
+    required this.initialFields,
     required this.fieldName,
-    required this.onIngredientsChanged,
+    required this.onStepsChanged,
   }) : super(key: key);
 
   @override
-  State<DynamicIngredientField> createState() => _DynamicIngredientFieldState();
+  State<DynamicStepField> createState() => _DynamicStepFieldState();
 }
 
-class _DynamicIngredientFieldState extends State<DynamicIngredientField> {
+class _DynamicStepFieldState extends State<DynamicStepField> {
   late List<TextEditingController> controllers;
 
   @override
   void initState() {
     super.initState();
-    controllers = widget.initialIngredients
-        .map((ingredient) => TextEditingController(text: ingredient))
-        .toList();
+    _updateControllers();
+  }
 
-    if (controllers.isEmpty) {
-      controllers.add(TextEditingController());
+  @override
+  void didUpdateWidget(DynamicStepField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialFields != oldWidget.initialFields) {
+      _updateControllers();
     }
+  }
+
+  void _updateControllers() {
+    print('dynamic steps: ${widget.initialFields}');
+    setState(() {
+      controllers = widget.initialFields
+          .map((step) => TextEditingController(text: step))
+          .toList();
+
+      if (controllers.isEmpty) {
+        controllers.add(TextEditingController());
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    print('building dynamicstepfield...');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -53,17 +69,22 @@ class _DynamicIngredientFieldState extends State<DynamicIngredientField> {
                     child: TextFormField(
                       controller: controllers[index],
                       decoration: InputDecoration(
-                        labelText: 'Ingredient ${index + 1}',
-                        hintText: 'Add Ingredient ${index + 1}',
+                        labelText: 'Step ${index + 1}',
+                        hintText: 'Add Step ${index + 1}',
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8)),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                       onChanged: (_) {
                         _notifyParent();
                       },
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter an ingredient';
+                          return 'Please enter a step';
                         }
                         return null;
                       },
@@ -87,14 +108,9 @@ class _DynamicIngredientFieldState extends State<DynamicIngredientField> {
           },
         ),
         const SizedBox(height: 1),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.add_circle),
-              onPressed: _addField,
-            ),
-          ],
+        IconButton(
+          icon: const Icon(Icons.add_circle),
+          onPressed: _addField,
         ),
       ],
     );
@@ -108,10 +124,10 @@ class _DynamicIngredientFieldState extends State<DynamicIngredientField> {
   }
 
   void _notifyParent() {
-    final ingredients =
-        controllers.map((controller) => controller.text).toList();
-
-    widget.onIngredientsChanged(ingredients);
+    final steps = controllers.map((controller) => controller.text).toList();
+    print('Notifying parent with steps: $steps');
+    widget.onStepsChanged(steps);
+    // widget.initialFields;
   }
 
   @override

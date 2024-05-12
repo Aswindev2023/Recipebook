@@ -1,38 +1,54 @@
 import 'package:flutter/material.dart';
 
-class DynamicStepField extends StatefulWidget {
-  final List<String> initialFields;
+class DynamicIngredientField extends StatefulWidget {
+  final List<String> initialIngredients;
   final String fieldName;
-  final Function(List<String>) onStepsChanged;
+  final Function(List<String>) onIngredientsChanged;
 
-  const DynamicStepField({
+  const DynamicIngredientField({
     Key? key,
-    required this.initialFields,
+    required this.initialIngredients,
     required this.fieldName,
-    required this.onStepsChanged,
+    required this.onIngredientsChanged,
   }) : super(key: key);
 
   @override
-  State<DynamicStepField> createState() => _DynamicStepFieldState();
+  State<DynamicIngredientField> createState() => _DynamicIngredientFieldState();
 }
 
-class _DynamicStepFieldState extends State<DynamicStepField> {
+class _DynamicIngredientFieldState extends State<DynamicIngredientField> {
   late List<TextEditingController> controllers;
 
   @override
   void initState() {
     super.initState();
-    controllers = widget.initialFields
-        .map((step) => TextEditingController(text: step))
-        .toList();
+    _updateControllers();
+  }
 
-    if (controllers.isEmpty) {
-      controllers.add(TextEditingController());
+  @override
+  void didUpdateWidget(DynamicIngredientField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialIngredients != oldWidget.initialIngredients) {
+      _updateControllers();
     }
+  }
+
+  void _updateControllers() {
+    print('dynamic ingredients: ${widget.initialIngredients}');
+    setState(() {
+      controllers = widget.initialIngredients
+          .map((ingredient) => TextEditingController(text: ingredient))
+          .toList();
+
+      if (controllers.isEmpty) {
+        controllers.add(TextEditingController());
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    print('Building DynamicIngredientField...');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -45,19 +61,19 @@ class _DynamicStepFieldState extends State<DynamicStepField> {
           shrinkWrap: true,
           itemCount: controllers.length,
           itemBuilder: (context, index) {
+            final controller = controllers[index];
             return Container(
               margin: const EdgeInsets.only(bottom: 8),
               child: Row(
                 children: [
                   Expanded(
                     child: TextFormField(
-                      controller: controllers[index],
+                      controller: controller,
                       decoration: InputDecoration(
-                        labelText: 'Step ${index + 1}',
-                        hintText: 'Add Step ${index + 1}',
+                        labelText: 'Ingredient ${index + 1}',
+                        hintText: 'Add Ingredient ${index + 1}',
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                            borderRadius: BorderRadius.circular(8)),
                       ),
                       onChanged: (_) {
                         _notifyParent();
@@ -68,13 +84,13 @@ class _DynamicStepFieldState extends State<DynamicStepField> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a step';
+                          return 'Please enter an ingredient';
                         }
                         return null;
                       },
                     ),
                   ),
-                  if (controllers.length > 1)
+                  if (controllers.length > 1 && index > 0)
                     IconButton(
                       icon: const Icon(Icons.remove_circle),
                       onPressed: controllers.length > 1
@@ -92,9 +108,14 @@ class _DynamicStepFieldState extends State<DynamicStepField> {
           },
         ),
         const SizedBox(height: 1),
-        IconButton(
-          icon: const Icon(Icons.add_circle),
-          onPressed: _addField,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.add_circle),
+              onPressed: _addField,
+            ),
+          ],
         ),
       ],
     );
@@ -108,15 +129,11 @@ class _DynamicStepFieldState extends State<DynamicStepField> {
   }
 
   void _notifyParent() {
-    final steps = controllers.map((controller) => controller.text).toList();
-    widget.onStepsChanged(steps);
-  }
-
-  /*void _updateSteps() {
-    List<String> steps =
+    final ingredients =
         controllers.map((controller) => controller.text).toList();
-    widget.onStepsChanged(steps);
-  }*/
+    print('Notifying parent with ingredients: $ingredients');
+    widget.onIngredientsChanged(ingredients);
+  }
 
   @override
   void dispose() {

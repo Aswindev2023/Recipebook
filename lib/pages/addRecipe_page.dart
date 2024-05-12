@@ -4,19 +4,19 @@ import 'package:recipe_book/classes/form_class.dart';
 import 'package:recipe_book/db/ingredients_function.dart';
 import 'package:recipe_book/db/recipe_functions.dart';
 import 'package:recipe_book/db/step_function.dart';
-import 'package:recipe_book/model/Ingredients_model.dart';
+import 'package:recipe_book/model/ingredientmodels_class.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
 import 'package:recipe_book/model/steps_model.dart';
 import 'package:recipe_book/pages/home_page.dart';
 
-class MyFormPage extends StatefulWidget {
-  const MyFormPage({Key? key}) : super(key: key);
+class MyRecipeFormPage extends StatefulWidget {
+  const MyRecipeFormPage({Key? key}) : super(key: key);
 
   @override
-  State<MyFormPage> createState() => _MyFormPageState();
+  State<MyRecipeFormPage> createState() => _MyRecipeFormPageState();
 }
 
-class _MyFormPageState extends State<MyFormPage> {
+class _MyRecipeFormPageState extends State<MyRecipeFormPage> {
   final int _selectedIndex = 3;
   final _formKey = GlobalKey<FormState>();
   late final RecipeFormFields recipeFormFields;
@@ -35,13 +35,16 @@ class _MyFormPageState extends State<MyFormPage> {
 
   @override
   Widget build(BuildContext context) {
-    print('Building MyFormPage widget');
+    final brightness = Theme.of(context).brightness;
+    final isDarkTheme = brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        leading: const Icon(
+        leading: Icon(
           Icons.arrow_back,
-          color: Colors.white,
+          color: isDarkTheme
+              ? const Color.fromARGB(117, 32, 31, 31)
+              : Colors.white,
         ),
         title: const Text(
           'New Recipe',
@@ -72,6 +75,8 @@ class _MyFormPageState extends State<MyFormPage> {
                   onCookTimeChanged: recipeFormFields.setCookTime,
                   validator: recipeFormFields.validateCookTime,
                   onUnitChanged: updateSelectedUnit,
+                  initialValue: recipeFormFields.cookTime,
+                  initialUnit: recipeFormFields.selectedUnit!,
                 ),
                 const SizedBox(height: 20),
                 buildCategoryDropdown(recipeFormFields),
@@ -107,7 +112,7 @@ class _MyFormPageState extends State<MyFormPage> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const MyFormPage()),
+                                builder: (context) => const MyRecipeFormPage()),
                           );
                         },
                         style: ElevatedButton.styleFrom(

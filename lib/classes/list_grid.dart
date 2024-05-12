@@ -7,6 +7,7 @@ import 'package:recipe_book/db/recipe_functions.dart';
 import 'package:recipe_book/db/step_function.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
 import 'package:recipe_book/pages/detailedview_page.dart';
+import 'package:recipe_book/pages/editRecipe_page.dart';
 
 class RecipeListWidget extends StatefulWidget {
   final bool isGridView;
@@ -26,11 +27,53 @@ class RecipeListWidget extends StatefulWidget {
 }
 
 class _RecipeListWidgetState extends State<RecipeListWidget> {
+  void deletes(int id) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Deletion'),
+          content: const Text(
+              'Are you sure you want to delete this recipe? This action cannot be undone.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  deleteRecipe(id);
+                  deleteIngredient(id);
+                  deleteStep(id);
+                  widget.fetchRecipes();
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Recipe deleted'),
+                  ),
+                );
+              },
+              child: const Text('Delete'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return widget.isGridView
-        ? _buildGridView(widget.recipes)
-        : _buildListView(widget.recipes);
+        ? _buildGridView(
+            widget.recipes,
+          )
+        : _buildListView(
+            widget.recipes,
+          );
   }
 
   Widget _buildGridView(
@@ -40,15 +83,20 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
       return const Center(
         child: Text(
           'No recipes available.',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       );
     }
     return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent:
+            200, // Adjust the maximum width of each item as needed
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
+        childAspectRatio: 1,
       ),
       itemCount: recipes.length,
       itemBuilder: (BuildContext context, int index) {
@@ -126,25 +174,36 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                       bottom: 0,
                       right: 0,
                       child: PopupMenuButton(
-                        onSelected: (value) {
+                        onSelected: (value) async {
                           if (value == 'delete') {
                             setState(() {
-                              deleteRecipe(recipe.id);
-                              deleteIngredient(recipe.id);
-                              deleteStep(recipe.id);
-                              widget.fetchRecipes();
+                              deletes(recipe.recipeId);
+                              print(
+                                  'passing recipeid for deletion:${recipe.recipeId}');
                             });
                           }
                           if (value == 'edit') {
-                            Navigator.push(
+                            final result = await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const Placeholder(),
+                                builder: (context) => RecipeEditPage(
+                                  recipeDetails: recipe,
+                                ),
                               ),
                             );
+                            if (result == true) {
+                              setState(() {
+                                widget.fetchRecipes();
+                              });
+                            }
                           }
                           if (value == 'addFavourite') {
                             addToFavourites(recipe.recipeId);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Recipe added to  favourites'),
+                              ),
+                            );
                           }
                         },
                         itemBuilder: (BuildContext context) => [
@@ -180,11 +239,19 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
   Widget _buildListView(
     List<RecipeDetails> recipes,
   ) {
+    final brightness = Theme.of(context).brightness;
+    final isDarkTheme = brightness == Brightness.dark;
     if (recipes.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'No recipes available.',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: isDarkTheme
+                ? const Color.fromARGB(255, 255, 255, 255)
+                : const Color.fromARGB(255, 0, 0, 0),
+          ),
         ),
       );
     }
@@ -202,65 +269,81 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
             );
           },
           child: Card(
-            color: const Color.fromARGB(255, 255, 254, 234),
+            color: isDarkTheme
+                ? const Color.fromARGB(255, 0, 0, 0)
+                : const Color.fromARGB(255, 255, 255, 255),
             elevation: 8,
             child: ListTile(
-                leading: ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: Image.memory(
-                    (recipe.imageByteList.isNotEmpty
-                        ? recipe.imageByteList[0]
-                        : Uint8List(0)),
-                    fit: BoxFit.cover,
-                    width: 60,
-                    height: 60,
-                  ),
+              leading: ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: Image.memory(
+                  (recipe.imageByteList.isNotEmpty
+                      ? recipe.imageByteList[0]
+                      : Uint8List(0)),
+                  fit: BoxFit.cover,
+                  width: 60,
+                  height: 60,
                 ),
-                title: Text(recipe.name),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    PopupMenuButton<String>(
-                      onSelected: (value) {
-                        if (value == 'delete') {
+              ),
+              title: Text(recipe.name,
+                  style: TextStyle(
+                    color: isDarkTheme
+                        ? const Color.fromARGB(255, 255, 255, 255)
+                        : const Color.fromARGB(255, 0, 0, 0),
+                  )),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  PopupMenuButton<String>(
+                    onSelected: (value) async {
+                      if (value == 'delete') {
+                        setState(() {
+                          deletes(recipe.recipeId);
+                        });
+                      }
+                      if (value == 'edit') {
+                        final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RecipeEditPage(
+                                recipeDetails: recipe,
+                              ),
+                            ));
+                        if (result == true) {
                           setState(() {
-                            deleteRecipe(recipe.id);
-                            deleteIngredient(recipe.id);
-                            deleteStep(recipe.id);
                             widget.fetchRecipes();
                           });
                         }
-                        if (value == 'edit') {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const Placeholder(),
-                              ));
-                        }
-                        if (value == 'addFavourite') {
-                          addToFavourites(recipe.recipeId);
-                        }
-                      },
-                      itemBuilder: (BuildContext context) => [
-                        const PopupMenuItem<String>(
-                          value: 'addFavourite',
-                          child: Text('AddFavourite'),
-                        ),
-                        const PopupMenuItem<String>(
-                          value: 'edit',
-                          child: Text('Edit'),
-                        ),
-                        const PopupMenuItem<String>(
-                          value: 'delete',
-                          child: Text('Delete'),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                subtitle: Text(
+                      }
+                      if (value == 'addFavourite') {
+                        addToFavourites(recipe.recipeId);
+                      }
+                    },
+                    itemBuilder: (BuildContext context) => [
+                      const PopupMenuItem<String>(
+                        value: 'addFavourite',
+                        child: Text('AddFavourite'),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: 'edit',
+                        child: Text('Edit'),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: 'delete',
+                        child: Text('Delete'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              subtitle: Text(
                   'Cook time: ${recipe.cookTime} ${recipe.selectedUnit ?? ''}',
-                )),
+                  style: TextStyle(
+                    color: isDarkTheme
+                        ? const Color.fromARGB(255, 255, 255, 255)
+                        : const Color.fromARGB(255, 0, 0, 0),
+                  )),
+            ),
           ),
         );
       },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:recipe_book/model/Ingredients_model.dart';
+import 'package:recipe_book/model/ingredientmodels_class.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class IngredientList extends StatefulWidget {
   final List<RecipeIngredients> ingredients;
@@ -12,19 +13,94 @@ class IngredientList extends StatefulWidget {
 
 class _IngredientListState extends State<IngredientList> {
   late List<bool> _isCheckedList;
+  late Future<void> _loadingState;
 
   @override
   void initState() {
     super.initState();
+    _loadingState = _loadCheckboxesState();
+  }
 
-    _isCheckedList = List<bool>.filled(_getIngredientCount(), false);
+  Future<void> _loadCheckboxesState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isCheckedList = List.generate(_getIngredientCount(), (index) {
+        return prefs.getBool('checkbox_$index') ?? false;
+      });
+    });
+  }
+
+  void _saveCheckboxState(int index, bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('checkbox_$index', value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text(
+          'Ingredient List',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: FutureBuilder<void>(
+        future: _loadingState,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator(); // Show a loading indicator while waiting
+          } else {
+            return ListView.builder(
+              itemCount: _getIngredientCount(),
+              itemBuilder: (context, index) {
+                final ingredientIndex = _getIngredientIndex(index);
+                final ingredient = widget.ingredients[ingredientIndex]
+                    .ingredient[index - _getIngredientIndex(index)];
+                return CheckboxListTile(
+                  title: Text(ingredient),
+                  value: _isCheckedList[index],
+                  onChanged: (value) {
+                    setState(() {
+                      _isCheckedList[index] = value!;
+                      _saveCheckboxState(
+                          index, value); // Save state when checkbox changes
+                    });
+                  },
+                );
+              },
+            );
+          }
+        },
+      ),
+      floatingActionButton: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.red,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+        onPressed: () {
+          setState(() {
+            _isCheckedList = List<bool>.filled(_getIngredientCount(), false);
+            _isCheckedList.forEachIndexed((index, _) {
+              _saveCheckboxState(index, false);
+            });
+          });
+        },
+        child: const Text(
+          'Clear All',
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ),
+      ),
+    );
   }
 
   int _getIngredientCount() {
     int totalCount = 0;
-    widget.ingredients.forEach((ingredient) {
+    for (var ingredient in widget.ingredients) {
       totalCount += ingredient.ingredient.length;
-    });
+    }
     return totalCount;
   }
 
@@ -39,34 +115,12 @@ class _IngredientListState extends State<IngredientList> {
     }
     return -1;
   }
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text(
-          'Ingredient List',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-      ),
-      body: ListView.builder(
-        itemCount: _getIngredientCount(),
-        itemBuilder: (context, index) {
-          final ingredientIndex = _getIngredientIndex(index);
-          final ingredient = widget.ingredients[ingredientIndex]
-              .ingredient[index - _getIngredientIndex(index)];
-          return CheckboxListTile(
-            title: Text(ingredient),
-            value: _isCheckedList[index],
-            onChanged: (value) {
-              setState(() {
-                _isCheckedList[index] = value!;
-              });
-            },
-          );
-        },
-      ),
-    );
+extension ListExtensions<T> on List<T> {
+  void forEachIndexed(void Function(int index, T item) f) {
+    for (var i = 0; i < length; i++) {
+      f(i, this[i]);
+    }
   }
 }

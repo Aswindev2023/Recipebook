@@ -4,10 +4,12 @@ import 'package:image_picker/image_picker.dart';
 
 class ImagePickerAndDisplay extends StatefulWidget {
   final void Function(List<Uint8List> bytesList) onImagesSelected;
+  final List<Uint8List> initialImageBytesList;
 
   const ImagePickerAndDisplay({
     Key? key,
     required this.onImagesSelected,
+    required this.initialImageBytesList,
   }) : super(key: key);
 
   @override
@@ -17,6 +19,12 @@ class ImagePickerAndDisplay extends StatefulWidget {
 class _ImagePickerAndDisplayState extends State<ImagePickerAndDisplay> {
   final ImagePicker _imagePicker = ImagePicker();
   List<Uint8List> _imageBytesList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _imageBytesList = List.from(widget.initialImageBytesList);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,14 +57,16 @@ class _ImagePickerAndDisplayState extends State<ImagePickerAndDisplay> {
 
   Future<void> _pickImages() async {
     List<XFile>? pickedImages = await _imagePicker.pickMultiImage();
-    List<Uint8List> bytesList = [];
-    for (var pickedImage in pickedImages) {
-      final bytes = await pickedImage.readAsBytes();
-      bytesList.add(bytes);
+    if (pickedImages.isNotEmpty) {
+      List<Uint8List> bytesList = [];
+      for (var pickedImage in pickedImages) {
+        final bytes = await pickedImage.readAsBytes();
+        bytesList.add(bytes);
+      }
+      setState(() {
+        _imageBytesList = bytesList;
+      });
+      widget.onImagesSelected(_imageBytesList);
     }
-    setState(() {
-      _imageBytesList = List.from(_imageBytesList)..addAll(bytesList);
-    });
-    widget.onImagesSelected(_imageBytesList);
   }
 }

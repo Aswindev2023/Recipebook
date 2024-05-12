@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:recipe_book/classes/bottomnavigationbar.dart';
@@ -38,28 +40,86 @@ class _CategoryState extends State<Category> {
 
   Future<void> deleteCategories(String name, int id) async {
     final List<RecipeDetails> recipes = await getRecipes();
-    final updatedRecipes =
-        recipes.any((recipe) => recipe.selectedCategory == name);
-    if (!updatedRecipes) {
-      deleteCategory(id);
-      setState(() {
-        getCategory();
-      });
+    final hasRecipes = recipes.any((recipe) => recipe.selectedCategory == name);
+
+    if (hasRecipes) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Cannot delete category'),
+            content: const Text(
+                'This category has recipes. Please delete the recipes first.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Confirm Deletion'),
+            content: const Text(
+                'Are you sure you want to delete this category? This action cannot be undone.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  deleteCategory(id);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Category deleted'),
+                    ),
+                  );
+                  setState(() {
+                    getCategory();
+                  });
+                },
+                child: const Text('Delete'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancel'),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
+    final isDarkTheme = brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
-        leading: const Icon(
+        backgroundColor:
+            isDarkTheme ? const Color.fromARGB(117, 32, 31, 31) : Colors.white,
+        leading: Icon(
           Icons.arrow_back,
-          color: Colors.white,
+          color: isDarkTheme
+              ? const Color.fromARGB(117, 32, 31, 31)
+              : Colors.white,
         ),
         centerTitle: true,
-        title: const Text(
+        title: Text(
           'Categories',
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+            color: isDarkTheme ? Colors.white : Colors.black,
+          ),
         ),
         actions: [
           IconButton(
@@ -73,22 +133,26 @@ class _CategoryState extends State<Category> {
                 getCategory();
               });
             },
-            icon: const Icon(
+            icon: Icon(
               Icons.add,
               size: 30,
+              color: isDarkTheme ? Colors.white : Colors.black,
             ),
           ),
           const SizedBox(
             width: 15,
           )
         ],
-        backgroundColor: Colors.white,
       ),
       body: _categories.isEmpty
-          ? const Center(
+          ? Center(
               child: Text(
                 'No categories available.',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: isDarkTheme ? Colors.white : Colors.black,
+                ),
               ),
             )
           : ListView.builder(
@@ -126,9 +190,9 @@ class _CategoryState extends State<Category> {
                           child: Text("Delete"),
                         ),
                       ],
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.more_vert,
-                        color: Colors.black,
+                        color: isDarkTheme ? Colors.white : Colors.black,
                       ),
                     ),
                     onTap: () {
