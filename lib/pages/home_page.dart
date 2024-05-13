@@ -170,7 +170,9 @@ class _HomepageState extends State<Homepage> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: Colors.lightBlueAccent, width: 2),
-                color: const Color.fromARGB(255, 236, 234, 234),
+                color: isDarkTheme
+                    ? const Color.fromARGB(255, 62, 60, 60)
+                    : const Color.fromARGB(255, 255, 255, 255),
               ),
               child: TextField(
                   decoration: const InputDecoration(

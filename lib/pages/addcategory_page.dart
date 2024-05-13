@@ -26,8 +26,6 @@ class _AddCategoryState extends State<AddCategory> {
       setState(() {
         _imageBytes = bytes;
       });
-    } else {
-      print('No image picked');
     }
   }
 
@@ -46,15 +44,17 @@ class _AddCategoryState extends State<AddCategory> {
 
   @override
   Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
+    final isDarkTheme = brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text(
+        title: Text(
           'Add Category',
           style: TextStyle(
             fontSize: 30,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: isDarkTheme ? Colors.white : Colors.black,
           ),
         ),
       ),

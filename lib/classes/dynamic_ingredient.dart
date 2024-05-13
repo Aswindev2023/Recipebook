@@ -34,7 +34,6 @@ class _DynamicIngredientFieldState extends State<DynamicIngredientField> {
   }
 
   void _updateControllers() {
-    print('dynamic ingredients: ${widget.initialIngredients}');
     setState(() {
       controllers = widget.initialIngredients
           .map((ingredient) => TextEditingController(text: ingredient))
@@ -48,7 +47,6 @@ class _DynamicIngredientFieldState extends State<DynamicIngredientField> {
 
   @override
   Widget build(BuildContext context) {
-    print('Building DynamicIngredientField...');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -131,7 +129,7 @@ class _DynamicIngredientFieldState extends State<DynamicIngredientField> {
   void _notifyParent() {
     final ingredients =
         controllers.map((controller) => controller.text).toList();
-    print('Notifying parent with ingredients: $ingredients');
+
     widget.onIngredientsChanged(ingredients);
   }
 

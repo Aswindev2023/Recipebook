@@ -8,37 +8,26 @@ ValueNotifier<List<RecipeIngredients>> ingredientListNotifier =
     ValueNotifier([]);
 
 void addIngredient(RecipeIngredients value, int recipeId) async {
-  print('adding ingredients:$value');
   final ingredientsBox = await Hive.openBox<RecipeIngredients>('Ingredient_db');
   value.recipeId = recipeId;
-  print('ingredient addfunction:${value.recipeId}');
+
   final id = await ingredientsBox.add(value);
   value.id = id;
-  print('added id ingredient: $id');
-  print('added ingredients:$value');
   ingredientListNotifier.value = ingredientsBox.values.toList();
   ingredientListNotifier.notifyListeners();
 }
 
 Future<List<RecipeIngredients>> getIngredients(int recipeId) async {
-  print('getIngredients');
   final ingredientsBox = await Hive.openBox<RecipeIngredients>('Ingredient_db');
   final List<RecipeIngredients> allIngredients = ingredientsBox.values.toList();
   final List<RecipeIngredients> ingredientsByRecipeId = allIngredients
       .where((ingredient) => ingredient.recipeId == recipeId)
       .toList();
   ingredientListNotifier.notifyListeners();
-  print(
-      'getIngredientsByRecipeId for recipeId $recipeId: $ingredientsByRecipeId');
   return ingredientsByRecipeId;
 }
 
 void deleteIngredient(int? recipeId) async {
-  if (recipeId == null) {
-    print('Recipe ID cannot be null');
-    return;
-  }
-
   final ingredientsBox = await Hive.openBox<RecipeIngredients>('Ingredient_db');
   final keysToDelete = ingredientsBox.values
       .where((ingredient) => ingredient.recipeId == recipeId)
@@ -48,9 +37,6 @@ void deleteIngredient(int? recipeId) async {
   for (var id in keysToDelete) {
     if (ingredientsBox.containsKey(id)) {
       await ingredientsBox.delete(id);
-      print('Deleted ingredient with ID: $id');
-    } else {
-      print('Ingredient with ID $id does not exist');
     }
   }
 
@@ -70,12 +56,8 @@ void updateIngredient(
     updatedIngredient.recipeId =
         oldIngredient.recipeId; // Ensure the recipe ID remains the same
     await ingredientsBox.putAt(ingredientIndex, updatedIngredient);
-    print('Updated ingredient with ID: $ingredientId');
 
-    // Update the ValueNotifier list
     ingredientListNotifier.value = ingredientsBox.values.toList();
     ingredientListNotifier.notifyListeners();
-  } else {
-    print('Ingredient with ID $ingredientId does not exist');
   }
 }

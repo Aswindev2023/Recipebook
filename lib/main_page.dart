@@ -7,6 +7,7 @@ import 'package:recipe_book/model/recipe_categorymodel.dart';
 import 'package:recipe_book/model/recipebook_model.dart';
 import 'package:recipe_book/model/steps_model.dart';
 import 'package:recipe_book/pages/home_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,10 +24,11 @@ Future<void> main() async {
     Hive.registerAdapter(CategoryModelAdapter());
     Hive.registerAdapter(FavouritesAdapter());
   }
-
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool isDarkMode = prefs.getBool('darkMode') ?? false;
   runApp(
     ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
+      create: (_) => ThemeProvider(isDarkMode),
       child: const MyApp(),
     ),
   );
@@ -154,8 +156,13 @@ class ThemeProvider extends ChangeNotifier {
 
   bool get isDarkMode => _isDarkMode;
 
-  void toggleTheme(bool isDarkMode) {
+  ThemeProvider(this._isDarkMode);
+
+  void toggleTheme(bool isDarkMode) async {
     _isDarkMode = isDarkMode;
     notifyListeners();
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('darkMode', isDarkMode);
   }
 }

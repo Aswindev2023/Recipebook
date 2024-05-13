@@ -31,32 +31,26 @@ class RecipeFormFields {
 
   void setCookTime(String value) {
     cookTime = value;
-    print('Cook time set to: $value');
   }
 
   void setUnit(String unit) {
     _selectedUnit = unit;
-    print('cook time unit:$_selectedUnit');
   }
 
   void setIngredients(List<String> ingredients) {
     _ingredients = ingredients;
-    print('ingredients  set to: $ingredients');
   }
 
   void setSteps(List<String> steps) {
     _steps = steps;
-    print('steps set to: $steps');
   }
 
   void setSelectedCategory(String? category) {
     _selectedCategory = category;
-    print('Category set to: $category');
   }
 
   void setImages(List<Uint8List> imageBytesList) {
     _imageBytesList = imageBytesList;
-    print('image set to: $imageBytesList');
   }
 
   RecipeForm getRecipeForm() {
@@ -102,7 +96,6 @@ class RecipeFormFields {
 Widget buildImagePickerAndDisplay(RecipeFormFields recipeFormFields) {
   return ImagePickerAndDisplay(
     onImagesSelected: (List<Uint8List> bytesList) {
-      print('buildImagePickerAndDisplay: $bytesList');
       recipeFormFields.setImages(bytesList);
     },
     initialImageBytesList: recipeFormFields.imageBytesList,
@@ -112,9 +105,6 @@ Widget buildImagePickerAndDisplay(RecipeFormFields recipeFormFields) {
 Widget buildStepField(
   RecipeFormFields recipeFormFields,
 ) {
-  print(
-      'buildStepField Function Signature: Takes RecipeFormFields object as argument');
-  print('Current Value of _steps ${recipeFormFields.steps}');
   return DynamicStepField(
     initialFields: recipeFormFields.steps,
     fieldName: 'Steps',
@@ -127,9 +117,6 @@ Widget buildStepField(
 Widget buildIngredientField(
   RecipeFormFields recipeFormFields,
 ) {
-  print(
-      'buildIngredientField Function Signature: Takes RecipeFormFields object as argument');
-  print('current value of _ingredients: ${recipeFormFields.ingredients}');
   return DynamicIngredientField(
     initialIngredients: recipeFormFields.ingredients,
     fieldName: 'Ingredients',

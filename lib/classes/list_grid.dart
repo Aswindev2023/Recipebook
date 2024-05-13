@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -178,8 +180,6 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
                           if (value == 'delete') {
                             setState(() {
                               deletes(recipe.recipeId);
-                              print(
-                                  'passing recipeid for deletion:${recipe.recipeId}');
                             });
                           }
                           if (value == 'edit') {

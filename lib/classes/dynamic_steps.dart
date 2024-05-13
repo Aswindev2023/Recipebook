@@ -34,7 +34,6 @@ class _DynamicStepFieldState extends State<DynamicStepField> {
   }
 
   void _updateControllers() {
-    print('dynamic steps: ${widget.initialFields}');
     setState(() {
       controllers = widget.initialFields
           .map((step) => TextEditingController(text: step))
@@ -48,7 +47,6 @@ class _DynamicStepFieldState extends State<DynamicStepField> {
 
   @override
   Widget build(BuildContext context) {
-    print('building dynamicstepfield...');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -125,7 +123,7 @@ class _DynamicStepFieldState extends State<DynamicStepField> {
 
   void _notifyParent() {
     final steps = controllers.map((controller) => controller.text).toList();
-    print('Notifying parent with steps: $steps');
+
     widget.onStepsChanged(steps);
     // widget.initialFields;
   }

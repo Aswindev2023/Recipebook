@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:recipe_book/db/resetapp_functions.dart';
 import 'package:recipe_book/main_page.dart';
 
 import 'package:recipe_book/pages/about_page.dart';
@@ -9,8 +10,54 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Access the ThemeProvider instance from the context
     final themeProvider = Provider.of<ThemeProvider>(context);
+
+    void showResetConfirmationDialog() {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(
+              'Reset App',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+            ),
+            content: const Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Are you sure you want to reset the app?',
+                  style: TextStyle(fontSize: 15),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'This will clear all app data.',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  // Implement logic to reset the app
+                  resetApp(context);
+                },
+                child: const Text('Reset'),
+              ),
+            ],
+          );
+        },
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -26,10 +73,8 @@ class SettingsPage extends StatelessWidget {
             leading: const Icon(Icons.nightlight_round),
             title: const Text('Dark Mode'),
             trailing: Switch(
-              value: themeProvider
-                  .isDarkMode, // Use themeProvider to get the current theme state
+              value: themeProvider.isDarkMode,
               onChanged: (bool newValue) {
-                // Update the theme state using the themeProvider
                 themeProvider.toggleTheme(newValue);
               },
             ),
@@ -48,7 +93,7 @@ class SettingsPage extends StatelessWidget {
             leading: const Icon(Icons.restore),
             title: const Text('Reset App'),
             onTap: () {
-              // Implement logic to reset the app
+              showResetConfirmationDialog();
             },
           ),
         ],

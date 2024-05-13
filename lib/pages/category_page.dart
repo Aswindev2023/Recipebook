@@ -29,9 +29,7 @@ class _CategoryState extends State<Category> {
   }
 
   Future<void> getCategory() async {
-    print('getCategory in view page is called');
     List<CategoryModel> categoriesList = await getCategoryList();
-    print('category list is:$categoriesList');
 
     setState(() {
       _categories = categoriesList;
@@ -160,8 +158,6 @@ class _CategoryState extends State<Category> {
               itemCount: _categories.length,
               itemBuilder: (context, index) {
                 final CategoryModel categories = _categories[index];
-                print('Base64 string: ${categories.image}');
-
                 return Card(
                   elevation: 4,
                   child: ListTile(
@@ -181,10 +177,6 @@ class _CategoryState extends State<Category> {
                         }
                       },
                       itemBuilder: (BuildContext context) => [
-                        const PopupMenuItem(
-                          value: 'edit',
-                          child: Text("Edit"),
-                        ),
                         const PopupMenuItem(
                           value: 'delete',
                           child: Text("Delete"),
