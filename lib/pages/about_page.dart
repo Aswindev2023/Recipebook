@@ -22,7 +22,7 @@ class AboutPage extends StatelessWidget {
                 style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
               ),
               const Text(
-                AppConfig.appVersion, // Replace with actual version number
+                AppConfig.appVersion,
                 style: TextStyle(fontSize: 20),
               ),
               const SizedBox(height: 23),
@@ -30,44 +30,10 @@ class AboutPage extends StatelessWidget {
                 'About RecipeBook:',
                 style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
               ),
-              RichText(
-                text: const TextSpan(
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.black,
-                    height: 1.5,
-                  ),
-                  children: [
-                    TextSpan(
-                        text:
-                            'Welcome to RecipeBook, your ultimate offline recipe companion!\n'),
-                    TextSpan(
-                        text:
-                            'RecipeBook is designed to help you discover, organize, and cook delicious recipes right from your device, without the need for an internet connection.\n'),
-                    TextSpan(
-                        text:
-                            'Whether you\'re a seasoned chef or a cooking novice, RecipeBook has something for everyone.')
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text('Acknowledgments:',
-                  style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold)),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text(
-                'RecipeBook acknowledges the following third-party libraries and resources for their contributions to the application:',
-                style: TextStyle(fontSize: 20),
-              ),
-              _buildAcknowledgments(
-                'Hive Flutter',
-                'A lightweight and efficient database for storing recipe data offline.',
-              ),
-              _buildAcknowledgments(
-                'Provider Package',
-                'A state management solution for managing theme preferences and application state.',
+              _buildTextSection(
+                'Welcome to RecipeBook, your ultimate offline recipe companion!\n'
+                'RecipeBook is designed to help you discover, organize, and cook delicious recipes right from your device, without the need for an internet connection.\n'
+                'Whether you\'re a seasoned chef or a cooking novice, RecipeBook has something for everyone.',
               ),
               const SizedBox(height: 20),
               const Text(
@@ -185,27 +151,6 @@ class AboutPage extends StatelessWidget {
   }
 }
 
-Widget _buildAcknowledgments(String library, String description) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        library,
-        style: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      const SizedBox(height: 5),
-      Text(
-        description,
-        style: const TextStyle(fontSize: 18),
-      ),
-      const SizedBox(height: 10),
-    ],
-  );
-}
-
 class FAQItem extends StatelessWidget {
   final String question;
   final String answer;
@@ -237,6 +182,17 @@ class FAQItem extends StatelessWidget {
       ],
     );
   }
+}
+
+Widget _buildTextSection(String text) {
+  return Container(
+    padding: const EdgeInsets.all(5),
+    child: Text(
+      text,
+      style: const TextStyle(
+          fontSize: 20, fontWeight: FontWeight.w400, height: 1.5),
+    ),
+  );
 }
 
 Widget _buildEmailLink(String email) {

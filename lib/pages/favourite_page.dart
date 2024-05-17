@@ -3,9 +3,7 @@ import 'package:recipe_book/classes/bottomnavigationbar.dart';
 import 'package:recipe_book/classes/favourite_layout.dart';
 import 'package:recipe_book/classes/filterby_category.dart';
 import 'package:recipe_book/classes/sortingoption_widget.dart';
-
 import 'package:recipe_book/db/favourite_functions.dart';
-
 import 'package:recipe_book/model/recipebook_model.dart';
 import 'package:recipe_book/pages/settings_page.dart';
 

@@ -91,14 +91,12 @@ class _DynamicStepFieldState extends State<DynamicStepField> {
                   if (controllers.length > 1)
                     IconButton(
                       icon: const Icon(Icons.remove_circle),
-                      onPressed: controllers.length > 1
-                          ? () {
-                              setState(() {
-                                controllers.removeAt(index);
-                                _notifyParent();
-                              });
-                            }
-                          : null,
+                      onPressed: () {
+                        setState(() {
+                          controllers.removeAt(index);
+                          _notifyParent();
+                        });
+                      },
                     ),
                 ],
               ),
@@ -123,9 +121,7 @@ class _DynamicStepFieldState extends State<DynamicStepField> {
 
   void _notifyParent() {
     final steps = controllers.map((controller) => controller.text).toList();
-
     widget.onStepsChanged(steps);
-    // widget.initialFields;
   }
 
   @override

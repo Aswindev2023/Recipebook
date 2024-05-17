@@ -18,7 +18,7 @@ class _AddCategoryState extends State<AddCategory> {
   Uint8List? _imageBytes;
   Future<void> pickImage() async {
     final XFile? pickedImage = await ImagePicker().pickImage(
-      source: ImageSource.gallery, // Use gallery as the image source
+      source: ImageSource.gallery,
     );
 
     if (pickedImage != null) {

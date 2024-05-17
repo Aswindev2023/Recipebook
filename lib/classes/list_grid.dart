@@ -94,8 +94,7 @@ class _RecipeListWidgetState extends State<RecipeListWidget> {
     }
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent:
-            200, // Adjust the maximum width of each item as needed
+        maxCrossAxisExtent: 200,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
         childAspectRatio: 1,

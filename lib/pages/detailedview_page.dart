@@ -60,8 +60,6 @@ class _DetailedPageState extends State<DetailedPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Display Images
-              // Display Images
               SizedBox(
                 height: 200,
                 child: ListView.builder(
@@ -69,9 +67,7 @@ class _DetailedPageState extends State<DetailedPage> {
                   itemCount: widget.recipe.imageByteList.length,
                   itemBuilder: (context, index) {
                     return SizedBox(
-                      width: MediaQuery.of(context)
-                          .size
-                          .width, // Set width to device width
+                      width: MediaQuery.of(context).size.width,
                       child: Container(
                         decoration: BoxDecoration(
                           image: DecorationImage(

@@ -53,8 +53,7 @@ void updateIngredient(
 
   if (ingredientIndex != -1) {
     final oldIngredient = ingredientsBox.getAt(ingredientIndex)!;
-    updatedIngredient.recipeId =
-        oldIngredient.recipeId; // Ensure the recipe ID remains the same
+    updatedIngredient.recipeId = oldIngredient.recipeId;
     await ingredientsBox.putAt(ingredientIndex, updatedIngredient);
 
     ingredientListNotifier.value = ingredientsBox.values.toList();

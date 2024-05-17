@@ -41,6 +41,7 @@ class _FavouriteWidgetState extends State<FavouriteWidget> {
                   deleteRecipe(id);
                   deleteIngredient(id);
                   deleteStep(id);
+                  widget.fetchRecipes();
                 });
                 Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -83,8 +84,7 @@ class _FavouriteWidgetState extends State<FavouriteWidget> {
     }
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent:
-            200, // Adjust the maximum width of each item as needed
+        maxCrossAxisExtent: 200,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
         childAspectRatio: 1,
@@ -163,15 +163,14 @@ class _FavouriteWidgetState extends State<FavouriteWidget> {
                       bottom: 0,
                       right: 0,
                       child: PopupMenuButton(
-                        onSelected: (value) {
+                        onSelected: (value) async {
                           if (value == 'delete') {
                             setState(() {
                               deletes(recipe.recipeId);
-                              widget.fetchRecipes();
                             });
                           }
                           if (value == 'edit') {
-                            Navigator.push(
+                            final result = await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => RecipeEditPage(
@@ -179,6 +178,11 @@ class _FavouriteWidgetState extends State<FavouriteWidget> {
                                 ),
                               ),
                             );
+                            if (result == true) {
+                              setState(() {
+                                widget.fetchRecipes();
+                              });
+                            }
                           }
                           if (value == 'remove') {
                             setState(() {
@@ -276,7 +280,7 @@ class _FavouriteWidgetState extends State<FavouriteWidget> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     PopupMenuButton<String>(
-                      onSelected: (value) {
+                      onSelected: (value) async {
                         if (value == 'delete') {
                           setState(() {
                             deletes(recipe.recipeId);
@@ -286,13 +290,19 @@ class _FavouriteWidgetState extends State<FavouriteWidget> {
                           });
                         }
                         if (value == 'edit') {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => RecipeEditPage(
-                                  recipeDetails: recipe,
-                                ),
-                              ));
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RecipeEditPage(
+                                recipeDetails: recipe,
+                              ),
+                            ),
+                          );
+                          if (result == true) {
+                            setState(() {
+                              widget.fetchRecipes();
+                            });
+                          }
                         }
                         if (value == 'remove') {
                           setState(() {

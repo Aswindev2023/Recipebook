@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:recipe_book/main_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,6 +10,7 @@ Future<void> resetApp(BuildContext context) async {
   await clearHiveDatabases();
 
   clearSharedPreferences();
+  resetProvider(context);
 
   Navigator.pushReplacement(
     context,
@@ -27,4 +29,8 @@ Future<void> clearHiveDatabases() async {
 void clearSharedPreferences() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.clear();
+}
+
+void resetProvider(BuildContext context) {
+  Provider.of<ThemeProvider>(context, listen: false).reset();
 }

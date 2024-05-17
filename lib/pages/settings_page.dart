@@ -42,13 +42,12 @@ class SettingsPage extends StatelessWidget {
             actions: <Widget>[
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(); // Close the dialog
+                  Navigator.of(context).pop();
                 },
                 child: const Text('Cancel'),
               ),
               TextButton(
                 onPressed: () {
-                  // Implement logic to reset the app
                   resetApp(context);
                 },
                 child: const Text('Reset'),

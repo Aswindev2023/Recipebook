@@ -49,7 +49,7 @@ class _IngredientListState extends State<IngredientList> {
         future: _loadingState,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator(); // Show a loading indicator while waiting
+            return const CircularProgressIndicator();
           } else {
             return ListView.builder(
               itemCount: _getIngredientCount(),
@@ -63,8 +63,7 @@ class _IngredientListState extends State<IngredientList> {
                   onChanged: (value) {
                     setState(() {
                       _isCheckedList[index] = value!;
-                      _saveCheckboxState(
-                          index, value); // Save state when checkbox changes
+                      _saveCheckboxState(index, value);
                     });
                   },
                 );

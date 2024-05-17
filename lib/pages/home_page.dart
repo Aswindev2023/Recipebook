@@ -22,7 +22,7 @@ class _HomepageState extends State<Homepage> {
   List<RecipeDetails> _recipes = [];
 
   List<RecipeDetails> _filteredRecipes = [];
-  List<String> _selectedCategories = []; // Define this in your state class
+  List<String> _selectedCategories = []; 
 
   String _searchQuery = '';
   @override

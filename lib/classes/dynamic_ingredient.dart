@@ -88,7 +88,7 @@ class _DynamicIngredientFieldState extends State<DynamicIngredientField> {
                       },
                     ),
                   ),
-                  if (controllers.length > 1 && index > 0)
+                  if (controllers.length > 1)
                     IconButton(
                       icon: const Icon(Icons.remove_circle),
                       onPressed: controllers.length > 1

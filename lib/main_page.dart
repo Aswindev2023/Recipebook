@@ -165,4 +165,12 @@ class ThemeProvider extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('darkMode', isDarkMode);
   }
+
+  void reset() async {
+    _isDarkMode = false;
+    notifyListeners();
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('darkMode', _isDarkMode);
+  }
 }

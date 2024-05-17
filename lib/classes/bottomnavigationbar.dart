@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_book/classes/navigate_pages.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BottomNavigationBarWidget extends StatelessWidget {
   final int selectedIndex;
@@ -18,7 +19,7 @@ class BottomNavigationBarWidget extends StatelessWidget {
           label: 'Home',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.bookmark),
+          icon: FaIcon(FontAwesomeIcons.tableCellsLarge),
           label: 'Category',
         ),
         BottomNavigationBarItem(

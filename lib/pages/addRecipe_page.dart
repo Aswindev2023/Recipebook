@@ -94,6 +94,7 @@ class _MyRecipeFormPageState extends State<MyRecipeFormPage> {
                 Padding(
                   padding: const EdgeInsets.only(left: 10, right: 10),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       ElevatedButton(
                         onPressed: () {

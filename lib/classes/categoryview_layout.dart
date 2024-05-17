@@ -85,8 +85,7 @@ class _CategoryWidgetState extends State<CategoryWidget> {
     }
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent:
-            200, // Adjust the maximum width of each item as needed
+        maxCrossAxisExtent: 200,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
         childAspectRatio: 1,
@@ -165,19 +164,26 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                       bottom: 0,
                       right: 0,
                       child: PopupMenuButton(
-                        onSelected: (value) {
+                        onSelected: (value) async {
                           if (value == 'delete') {
                             setState(() {
                               delete(recipe.recipeId);
                             });
                           }
                           if (value == 'edit') {
-                            Navigator.push(
+                            final result = await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const Placeholder(),
+                                builder: (context) => RecipeEditPage(
+                                  recipeDetails: recipe,
+                                ),
                               ),
                             );
+                            if (result == true) {
+                              setState(() {
+                                widget.fetchRecipes(widget.categoryName);
+                              });
+                            }
                           }
                         },
                         itemBuilder: (BuildContext context) => [
@@ -259,19 +265,26 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     PopupMenuButton<String>(
-                      onSelected: (value) {
+                      onSelected: (value) async {
                         if (value == 'delete') {
                           setState(() {
                             delete(recipe.recipeId);
                           });
                         }
                         if (value == 'edit') {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    RecipeEditPage(recipeDetails: recipe),
-                              ));
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RecipeEditPage(
+                                recipeDetails: recipe,
+                              ),
+                            ),
+                          );
+                          if (result == true) {
+                            setState(() {
+                              widget.fetchRecipes(widget.categoryName);
+                            });
+                          }
                         }
                       },
                       itemBuilder: (BuildContext context) => [

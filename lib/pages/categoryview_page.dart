@@ -77,16 +77,6 @@ class _CategoryViewpageState extends State<CategoryViewpage> {
                   ),
                 ),
                 PopupMenuItem<String>(
-                  value: 'Filtered By',
-                  child: ListTile(
-                    title: const Text('Filtered By'),
-                    onTap: () {
-                      // Handle 'Filtered By' tap
-                      Navigator.pop(context);
-                    },
-                  ),
-                ),
-                PopupMenuItem<String>(
                   value: 'Settings',
                   child: ListTile(
                     title: const Text('Settings'),
@@ -168,21 +158,16 @@ class _CategoryViewpageState extends State<CategoryViewpage> {
 
   int _compareCookTime(
       RecipeDetails recipeA, RecipeDetails recipeB, bool ascending) {
-    // Extract cook times and units
     int timeA = int.parse(recipeA.cookTime);
     int timeB = int.parse(recipeB.cookTime);
     String unitA = recipeA.selectedUnit!;
     String unitB = recipeB.selectedUnit!;
-
-    // Convert both cook times to minutes for comparison
     if (unitA == 'Hours') {
       timeA *= 60;
     }
     if (unitB == 'Hours') {
       timeB *= 60;
     }
-
-    // Compare cook times based on ascending or descending order
     if (ascending) {
       return timeA.compareTo(timeB);
     } else {
