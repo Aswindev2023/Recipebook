@@ -128,6 +128,7 @@ class _AddCategoryState extends State<AddCategory> {
       String categoryName = _nameController.text;
       String image = base64Encode(_imageBytes!);
       CategoryModel category = CategoryModel(
+        id: 0,
         categoryName: categoryName,
         image: image,
       );

@@ -45,7 +45,7 @@ class _CategoryState extends State<Category> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Cannot delete category'),
+            title: const Text('Can\'t delete category'),
             content: const Text(
                 'This category has recipes. Please delete the recipes first.'),
             actions: <Widget>[
@@ -69,9 +69,9 @@ class _CategoryState extends State<Category> {
                 'Are you sure you want to delete this category? This action cannot be undone.'),
             actions: <Widget>[
               TextButton(
-                onPressed: () {
+                onPressed: () async {
                   Navigator.of(context).pop();
-                  deleteCategory(id);
+                  await deleteCategory(id);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Category deleted'),

@@ -31,7 +31,7 @@ class SettingsPage extends StatelessWidget {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'This will clear all app data.',
+                  'This will clear all app data.This action can\'t be undone.',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,

@@ -4,7 +4,7 @@ part 'recipe_categorymodel.g.dart';
 @HiveType(typeId: 2)
 class CategoryModel extends HiveObject {
   @HiveField(0)
-  int id = 0;
+  int id;
 
   @HiveField(1)
   final String categoryName;
@@ -13,6 +13,7 @@ class CategoryModel extends HiveObject {
   final String image;
 
   CategoryModel({
+    required this.id,
     required this.categoryName,
     required this.image,
   });

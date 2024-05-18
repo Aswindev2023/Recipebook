@@ -5,11 +5,18 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:recipe_book/model/recipe_categorymodel.dart';
 
 ValueNotifier<List<CategoryModel>> categoryListNotifier = ValueNotifier([]);
-void addCategory(CategoryModel value) async {
+Future<void> addCategory(CategoryModel value) async {
   final categories = await Hive.openBox<CategoryModel>('Category_db');
-  final id = await categories.add(value);
+
+  // Manually manage unique IDs
+  final int id = categories.length > 0
+      ? categories.values.map((e) => e.id).reduce((a, b) => a > b ? a : b) + 1
+      : 1;
 
   value.id = id;
+
+  await categories.put(id, value);
+
   categoryListNotifier.value.add(value);
   categoryListNotifier.notifyListeners();
 }
@@ -26,12 +33,11 @@ Future<List<CategoryModel>> getCategoryList() async {
   return categoryList;
 }
 
-void deleteCategory(int? id) async {
+Future<void> deleteCategory(int id) async {
   final categoryBox = await Hive.openBox<CategoryModel>('Category_db');
   if (categoryBox.containsKey(id)) {
     await categoryBox.delete(id);
     categoryListNotifier.value = categoryBox.values.toList();
     categoryListNotifier.notifyListeners();
-    getCategoryList();
   }
 }
