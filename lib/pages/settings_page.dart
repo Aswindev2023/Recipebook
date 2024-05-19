@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recipe_book/db/resetapp_functions.dart';
-import 'package:recipe_book/main_page.dart';
+import 'package:recipe_book/main.dart';
 
 import 'package:recipe_book/pages/about_page.dart';
 

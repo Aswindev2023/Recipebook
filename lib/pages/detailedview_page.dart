@@ -73,7 +73,7 @@ class _DetailedPageState extends State<DetailedPage> {
                           image: DecorationImage(
                             image:
                                 MemoryImage(widget.recipe.imageByteList[index]),
-                            fit: BoxFit.cover,
+                            fit: BoxFit.contain,
                           ),
                         ),
                       ),

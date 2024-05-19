@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:recipe_book/main_page.dart';
+import 'package:recipe_book/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> resetApp(BuildContext context) async {

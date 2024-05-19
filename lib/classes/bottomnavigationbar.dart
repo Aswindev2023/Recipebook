@@ -12,6 +12,8 @@ class BottomNavigationBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
+    final isDarkTheme = brightness == Brightness.dark;
     return BottomNavigationBar(
       items: const [
         BottomNavigationBarItem(
@@ -35,7 +37,9 @@ class BottomNavigationBarWidget extends StatelessWidget {
       onTap: (index) => _onItemTapped(context, index),
       backgroundColor: Colors.white,
       selectedItemColor: Colors.blue,
-      unselectedItemColor: Colors.black,
+      unselectedItemColor: isDarkTheme
+          ? const Color.fromARGB(255, 255, 255, 255)
+          : const Color.fromARGB(255, 0, 0, 0),
     );
   }
 

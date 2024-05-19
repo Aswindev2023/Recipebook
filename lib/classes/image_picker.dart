@@ -43,10 +43,13 @@ class _ImagePickerAndDisplayState extends State<ImagePickerAndDisplay> {
                   scrollDirection: Axis.horizontal,
                   itemCount: _imageBytesList.length,
                   itemBuilder: (context, index) {
-                    return Image.memory(
-                      _imageBytesList[index],
-                      width: 400,
-                      fit: BoxFit.cover,
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.memory(
+                        _imageBytesList[index],
+                        width: 400,
+                        fit: BoxFit.contain,
+                      ),
                     );
                   },
                 ),
