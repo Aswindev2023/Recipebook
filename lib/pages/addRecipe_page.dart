@@ -107,7 +107,7 @@ class _MyRecipeFormPageState extends State<MyRecipeFormPage> {
                             style:
                                 TextStyle(color: Colors.white, fontSize: 20)),
                       ),
-                      const SizedBox(width: 160),
+                      const SizedBox(width: 140),
                       ElevatedButton(
                         onPressed: () {
                           Navigator.pushReplacement(
